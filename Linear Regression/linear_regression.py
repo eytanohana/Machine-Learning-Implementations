@@ -118,3 +118,38 @@ def optimal_theta(X, y):
     pinv_theta = np.dot(pinv_X, y)
 
     return pinv_theta
+
+
+def efficient_gradient_descent(X, y, theta, alpha, num_iters):
+    """
+    Learn the parameters of your model, but stop the learning process once
+    the improvement of the loss value and the loss value itself is smaller than 1e-8.
+    This function is very similar to the gradient descent function you already implemented.
+
+    Input:
+    - X: Inputs  (n features over m instances).
+    - y: True labels (1 value over m instances).
+    - theta: The parameters (weights) of the model being learned.
+    - alpha: The learning rate of your model.
+    - num_iters: The number of updates performed.
+
+    Returns two values:
+    - theta: The learned parameters of your model.
+    - J_history: the loss value for every iteration.
+    """
+
+    J_history = []  # Use a python list to save cost in every iteration
+    learning_rate = alpha / len(X)
+    J_history.append(compute_cost(X, y, theta))
+
+    for i in range(num_iters):
+        hypothesis = np.dot(X, theta)
+        error = hypothesis - y
+
+        theta = theta - learning_rate * np.dot(error, X)
+        J_history.append(compute_cost(X, y, theta))
+
+        if J_history[-1] < 1e-8 and abs(J_history[-1] - J_history[-2]) < 1e-8:
+            break
+
+    return theta, J_history
