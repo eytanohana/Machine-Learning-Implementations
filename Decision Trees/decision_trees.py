@@ -23,3 +23,22 @@ def calc_gini(data):
     gini = 1 - np.sum((class_counts / size) ** 2)
 
     return gini
+
+
+def calc_entropy(data):
+    """
+    Calculates the entropy of a dataset.
+
+    Input:
+    - data: any dataset where the last column holds the labels.
+
+    Returns the entropy of the dataset.
+    """
+    size = len(data)
+    classes = data[:,-1]
+    _, class_counts = np.unique(classes, return_counts=True)
+
+    entropy = (class_counts / size) * np.log2(class_counts / size)
+    entropy = -np.sum(entropy)
+
+    return entropy
