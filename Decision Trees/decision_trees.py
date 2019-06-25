@@ -69,3 +69,29 @@ def best_threshold(data, feature, impurity):
             best_thresh = thresh
 
     return best_thresh
+
+
+
+def info_gain(data, feature, threshold, impurity):
+    """
+    Calculates the information gain of a split by the given feature.
+
+    Input:
+    - data: any dataset where the last column holds the labels.
+    - feature: the column index of the feature to split by.
+    - impurity: the impurity measure to use (either calc_gini or calc_entropy).
+
+    Returns the information gain of a split by the given feature.
+    """
+    size = len(data)
+    left = data[data[:,feature] < threshold]
+    right = data[data[:,feature] > threshold]
+
+    parent_entropy = impurity(data)
+
+    left_entropy =  impurity(left)
+    right_entropy = impurity(right)
+
+    gain = parent_entropy - (len(left) / size) * left_entropy - (len(right) / size) * right_entropy
+
+    return gain
