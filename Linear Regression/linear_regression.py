@@ -153,3 +153,36 @@ def efficient_gradient_descent(X, y, theta, alpha, num_iters):
             break
 
     return theta, J_history
+
+
+def find_best_alpha(X, y, iterations):
+    """
+    Iterate over provided values of alpha and maintain a python dictionary
+    with alpha as the key and the final loss as the value.
+
+    Input:
+    - X: a dataframe that contains all relevant features.
+
+    Returns:
+    - alpha_dict: A python dictionary that hold the loss value after training
+    for every value of alpha.
+    """
+
+    alphas = [0.00001, 0.00003, 0.0001, 0.0003, 0.001, 0.003, 0.01, 0.03, 0.1, 0.3, 1, 2, 3]
+    alpha_dict = {}
+
+    for alpha in alphas:
+        loops = 0
+        theta = np.random.random(size=2)
+        last_loss = np.inf
+
+        while loops < iterations:
+            theta, loss = efficient_gradient_descent(X, y, theta, alpha, 100)
+
+            if loops > 0 and loss[-1] > last_loss:
+                break
+            loops += 100
+            last_loss = loss[-1]
+        alpha_dict[alpha] = last_loss
+
+    return alpha_dict
