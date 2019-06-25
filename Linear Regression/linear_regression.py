@@ -42,3 +42,37 @@ def compute_cost(X, y, theta):
 
     return J
 
+
+
+def gradient_descent(X, y, theta, alpha, num_iters):
+    """
+    Learn the parameters of the model using gradient descent. Gradient descent
+    is an optimization algorithm used to minimize some (loss) function by
+    iteratively moving in the direction of steepest descent as defined by the
+    negative of the gradient. We use gradient descent to update the parameters
+    (weights) of our model.
+
+    Input:
+    - X: Inputs  (n features over m instances).
+    - y: True labels (1 value over m instances).
+    - theta: The parameters (weights) of the model being learned.
+    - alpha: The learning rate of your model.
+    - num_iters: The number of updates performed.
+
+    Returns two values:
+    - theta: The learned parameters of your model.
+    - J_history: the loss value for every iteration.
+    """
+
+    J_history = []  # Use a python list to save cost in every iteration
+    learning_rate = alpha / len(X)
+
+    for i in range(num_iters):
+        hypothesis = np.dot(X, theta)
+        error = hypothesis - y
+
+        theta = theta - learning_rate * np.dot(error, X)
+
+        J_history.append(compute_cost(X, y, theta))
+
+    return theta, J_history
