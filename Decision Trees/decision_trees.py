@@ -42,3 +42,30 @@ def calc_entropy(data):
     entropy = -np.sum(entropy)
 
     return entropy
+
+
+def best_threshold(data, feature, impurity):
+    """
+    Calculates the best_threshold in a given feature to split the dataset by.
+
+    Input:
+    - data: any dataset where the last column holds the labels.
+    - feature: the column index of the feature to split by.
+    - impurity: the impurity measure to use (either calc_gini or calc_entropy).
+
+    Returns the best threshold from the given feature to split the data by.
+    """
+    values = np.unique(data[:,feature])
+    max_gain = -np.inf
+    best_thresh = None
+
+    for i in range(len(values) - 1):
+        thresh = (values[i] + values[i+1]) / 2
+
+        gain = info_gain(data, feature, thresh, impurity)
+
+        if gain > max_gain:
+            max_gain = gain
+            best_thresh = thresh
+
+    return best_thresh
