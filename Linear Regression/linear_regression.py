@@ -12,15 +12,9 @@ def preprocess(X, y):
 
     Returns a two vales:
     - X: The mean normalized inputs.
-    - y: The scaled labels.
+    - y: The mean normalized labels.
     """
-    
-    ###########################################################################
-    # TODO: Implement the normalization function.                             #
-    ###########################################################################
     X = (X - X.mean(axis=0)) / (X.max(axis=0) - X.min(axis=0))
     y = (y - y.mean()) / (y.max() - y.min())
-    ###########################################################################
-    #                             END OF YOUR CODE                            #
-    ###########################################################################
+
     return X, y
