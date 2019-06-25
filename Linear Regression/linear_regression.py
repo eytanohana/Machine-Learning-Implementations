@@ -76,3 +76,45 @@ def gradient_descent(X, y, theta, alpha, num_iters):
         J_history.append(compute_cost(X, y, theta))
 
     return theta, J_history
+
+
+def pseudo_inverse(X):
+    """
+    Matrices that aren't full rank (i.e. not all the columns are linearly independent)
+    are not invertible. So we can create a good approximation of the inverse of the matrix
+    using its pseudo-inverse defined as pinv(X) = (X_transpose * X)^-1 * X_transpose.
+    Note if the matrix is already full rank then the pseudo-inverse of the matrix is just its inverse.
+
+    This method of calculating the pseudo-inverse of a matrix can still fail if X_transpose * X
+    is still singular (i.e. not invertible). In which case you must use np.linalg.pinv(X)
+
+    :param X: The matrix
+    :return: The pseudo-inverse matrix of X
+    """
+    # X_transpose * X gives a square matrix
+    square = np.matmul(X.transpose(), X)
+    square_inverse = np.linalg.inv(square)
+    pinv_X = np.matmul(square_inverse, X.transpose())
+    ###########################################################################
+    #                             END OF YOUR CODE                            #
+    ###########################################################################
+    return pinv_X
+
+def optimal_theta(X, y):
+    """
+    Calculate the optimal values of the parameters using the pseudo-inverse
+    approach as you saw in class.
+
+    Input:
+    - X: Inputs  (n features over m instances).
+    - y: True labels (1 value over m instances).
+
+    Returns:
+    - theta: The optimal parameters of your model.
+
+    ########## DO NOT USE numpy.pinv ##############
+    """
+    pinv_X = pseudo_inverse(X)
+    pinv_theta = np.dot(pinv_X, y)
+
+    return pinv_theta
