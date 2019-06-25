@@ -186,3 +186,20 @@ def find_best_alpha(X, y, iterations):
         alpha_dict[alpha] = last_loss
 
     return alpha_dict
+
+
+def generate_triplets(X):
+    """
+    generate all possible sets of three features out of all relevant features
+    available from the given dataset X. You might want to use the itertools
+    python library.
+
+    Input:
+    - X: a dataframe that contains all relevant features.
+
+    Returns:
+    - A python list containing all feature triplets.
+    """
+    triplets = itertools.combinations(X, 3)
+
+    return list(triplets)
