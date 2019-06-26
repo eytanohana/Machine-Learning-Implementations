@@ -166,7 +166,7 @@ class DecisionNode:
     def is_pure(self):
         return len(np.unique(self.data[:, -1])) <= 1
 
-def build_tree(data, impurity, chi_value):
+def build_tree(data, impurity, chi_value=1):
     """
     Build a tree using the given impurity measure and training dataset.
     You are required to fully grow the tree until all leaves are pure.
@@ -289,22 +289,26 @@ def num_internal(node: DecisionNode):
     else:
         return num_internal(node.children[0]) + 1 + num_internal(node.children[1])
 
-def list_leaves(root: DecisionNode, leaves):
+def list_leaves(root: DecisionNode):
     """
     Creates a list of all the leaves in a tree.
 
     Input:
     - node: a DecisionNode
-    - leaves: a list that accumulates all the leaves in the tree
 
     Output: A list of all the leaves in the tree.
     """
-    if root.is_leaf():
-        leaves.append(root)
-    else:
-        list_leaves(root.children[0], leaves)
-        list_leaves(root.children[1], leaves)
-    return leaves
+    ################# helper function ##################
+    def list_leaves(root: DecisionNode, leaves):
+        if root.is_leaf():
+            leaves.append(root)
+        else:
+            list_leaves(root.children[0], leaves)
+            list_leaves(root.children[1], leaves)
+        return leaves
+    ###################################################
+
+    list_leaves(root, [])
 
 def post_prune(root: DecisionNode, train_set, test_set):
     """
@@ -333,7 +337,26 @@ def post_prune(root: DecisionNode, train_set, test_set):
     testing_accuracy.append((calc_accuracy(root, test_set)))
 
     while len(root.children) != 0:
-        pass
+        leaves = list_leaves(root)
+        max_test_acc = np.NINF
+        best_parent = None
+
+        for leaf in leaves:
+            stop = leaf.parent
+            test_acc = post_prune_accuracy(root, test_set, stop)
+
+            if test_acc > max_test_acc:
+                max_test_acc = test_acc
+                best_parent = stop
+
+        best_parent.children = []
+        train_acc = calc_accuracy(root, train_set)
+
+        training_accuracy.append(train_acc)
+        testing_accuracy.append(max_test_acc)
+        num_nodes.append(num_internal(root))
+
+    return training_accuracy, testing_accuracy, num_nodes
 
 
 
