@@ -311,6 +311,24 @@ def list_leaves(root: DecisionNode):
     return list_leaves(root, [])
 
 
+def post_prune_predict(root, instance, stop):
+    """
+    Predicts the class of the instance by traversing the tree
+    until it reaches either a leaf or the stop node.
+
+    :param root: The root of the decision tree.
+    :param instance: The instance to classify.
+    :param stop: The node to stop at.
+    :return: The prediction of the instance's class.
+    """
+    node = root
+
+    while not (root.is_leaf() and root == stop):
+        node = node.children[0] if instance[node.feature] < node.threshold else node.children[1]
+
+    return node.majority
+
+
 def post_prune_accuracy(root: DecisionNode, dataset, stop: DecisionNode):
     """
     Calculates the accuracy of the tree on the dataset without going past the stop node.
