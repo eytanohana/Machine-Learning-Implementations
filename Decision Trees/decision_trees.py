@@ -57,7 +57,7 @@ def best_threshold(data, feature, impurity):
     """
     values = np.unique(data[:,feature])
     max_gain = -np.inf
-    best_thresh = None
+    best_thresh = -1
 
     for i in range(len(values) - 1):
         thresh = (values[i] + values[i+1]) / 2
@@ -106,8 +106,8 @@ def best_feature_threshold(data, impurity):
     - impurity: the impurity measure to use (either calc_gini or calc_entropy).
     """
     max_gain = -np.inf
-    best_feat = None
-    best_thresh = None
+    best_feat = -1
+    best_thresh = -1
 
     for feat in range(data.shape[1] - 1):
         thresh = best_threshold(data, feat, impurity)
@@ -138,7 +138,7 @@ class DecisionNode:
         if self.is_leaf():
             string = f"leaf: [{{{self.data[0,-1]}: {len(self.data)}}}]"
         else:
-            string = f"X{self.feature} < {self.threshold}"
+            string = f"[X{self.feature} <= {self.threshold:.3f}]"
 
         return string
 
@@ -174,3 +174,28 @@ def build_tree(data, impurity):
 
     return root
 
+
+def help_print_tree(node, depth):
+    print('   '*depth, end='')
+    print(node)
+
+    if node.is_leaf():
+        return
+
+    depth += 1
+
+    help_print_tree(node.children[0], depth)
+    help_print_tree(node.children[1], depth)
+
+
+
+def print_tree(node):
+    """
+    prints the tree according to the example in the notebook
+
+	Input:
+	- node: a node in the decision tree
+
+	This function has no return value
+	"""
+    help_print_tree(node, 0)
