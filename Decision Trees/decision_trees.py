@@ -323,10 +323,35 @@ def post_prune_predict(root, instance, stop):
     """
     node = root
 
-    while not (root.is_leaf() and root == stop):
+    while not node.is_leaf():
+        if node == stop:
+            return node.majority
+        
         node = node.children[0] if instance[node.feature] < node.threshold else node.children[1]
 
     return node.majority
+#
+# def post_prune_predict(node: DecisionNode, instance, stop: DecisionNode):
+#     """
+#     Predicts the class of an instance in the tree pruned at the given stop node.
+#
+#     Input:
+#     - node: the root of the tree.
+#     - instance: the instance we want to predict.
+#     - stop: the node that was pruned due to the chi square test
+#
+#     Output: the prediction.
+#     """
+#     while (len(node.children) > 0):
+#         if (stop == node):
+#             return node.majority
+#
+#         if (not node.is_leaf()):
+#             if (instance[node.feature] <= node.threshold):
+#                 node = node.children[0]
+#             else:
+#                 node = node.children[1]
+#     return node.majority
 
 
 def post_prune_accuracy(root: DecisionNode, dataset, stop: DecisionNode):
