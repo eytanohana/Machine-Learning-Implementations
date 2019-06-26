@@ -128,11 +128,11 @@ class DecisionNode:
     # functionality as described in the notebook. It is highly recommended that you
     # first read and understand the entire exercise before diving into this class.
 
-    def __init__(self, data, feature, threshold, parent):
+    def __init__(self, data, feature, threshold):
         self.data = data
         self.feature = feature  # column index of feature that best splits the data
         self.threshold = threshold  # the best threshold of the feature
-        self.parent = parent
+        self.children = []
 
         labels, labels_count = np.unique(data[:,-1], return_counts=True)
         num_x_label = -np.inf
@@ -141,8 +141,6 @@ class DecisionNode:
                 num_x_label = labels_count[i]
                 self.majority = labels[i]
 
-
-        self.children = []
 
     def __str__(self):
         if self.is_leaf():
@@ -159,6 +157,8 @@ class DecisionNode:
 
     def add_child(self, node):
         self.children.append(node)
+        node.parent = self
+
 
     def is_leaf(self):
         return len(self.children) == 0
@@ -178,6 +178,7 @@ def build_tree(data, impurity, chi_value):
 
     Output: the root node of the tree.
     """
+
     feat, thresh = best_feature_threshold(data, impurity)
     root = DecisionNode(data, feat, thresh)
 
@@ -192,8 +193,8 @@ def build_tree(data, impurity, chi_value):
         if chi_square <= chi_table[chi_value]:
             return root
 
-    root.children.append(build_tree(left_data, impurity, chi_value))
-    root.children.append(build_tree(right_data, impurity, chi_value))
+    root.add_child(build_tree(left_data, impurity, chi_value))
+    root.add_child(build_tree(right_data, impurity, chi_value))
 
     return root
 
@@ -336,19 +337,6 @@ def post_prune(root: DecisionNode, train_set, test_set):
 
 
 
-def help_print_tree(node, depth):
-    print('   '*depth, end='')
-    print(node)
-
-    if node.is_leaf():
-        return
-
-    depth += 1
-
-    help_print_tree(node.children[0], depth)
-    help_print_tree(node.children[1], depth)
-
-
 
 def print_tree(node):
     """
@@ -359,5 +347,18 @@ def print_tree(node):
 
 	This function has no return value
 	"""
-    help_print_tree(node, 0)
+    ################ helper function ##############
+    def print_tree(node, depth):
+        print('   ' * depth, end='')
+        print(node)
 
+        if node.is_leaf():
+            return
+
+        depth += 1
+
+        print_tree(node.children[0], depth)
+        print_tree(node.children[1], depth)
+    #################################################
+
+    print_tree(node, 0)
