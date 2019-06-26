@@ -278,8 +278,22 @@ def num_internal(node: DecisionNode):
     else:
         return num_internal(node.children[0]) + 1 + num_internal(node.children[1])
 
-def list_leaves(root: DecisionNode, leaves_list):
-    pass
+def list_leaves(root: DecisionNode, leaves):
+    """
+    Creates a list of all the leaves in a tree.
+
+    Input:
+    - node: a DecisionNode
+    - leaves: a list that accumulates all the leaves in the tree
+
+    Output: A list of all the leaves in the tree.
+    """
+    if root.is_leaf():
+        leaves.append(root)
+    else:
+        list_leaves(root.children[0], leaves)
+        list_leaves(root.children[1], leaves)
+    return leaves
 
 def post_prune(root: DecisionNode, train_set, test_set):
     pass
