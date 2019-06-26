@@ -15,29 +15,33 @@ class NaiveNormalClassDistribution():
         - dataset: The dataset from which to compute the mean and mu (Numpy Array).
         - class_value : The class to calculate the mean and mu for.
         """
-        self.dataset = dataset[dataset[:,-1] == class_value]
+        self.dataset = dataset
+        self.class_dataset = dataset[dataset[:,-1] == class_value]
         self.class_value = class_value
-        self.mean = np.mean(self.dataset, axis=0)
-        self.std = np.std(self.dataset, axis=0)
+        self.mean = np.mean(self.class_dataset[:, :-1], axis=0)
+        self.std = np.std(self.class_dataset[:,:-1], axis=0)
     
     def get_prior(self):
         """
-        Returns the prior porbability of the class according to the dataset distribution.
+        Returns the prior probability of the class according to the dataset distribution.
+        P(A)
         """
-        return 1
+        return len(self.class_dataset) / len(self.dataset)
     
     def get_instance_likelihood(self, x):
         """
-        Returns the likelihhod porbability of the instance under the class according to the dataset distribution.
+        Returns the likelihood probability of the instance under the class according to the dataset distribution.
+        P(x | A)
         """
-        return 1
+        return normal_pdf(x, self.mean, self.std)
     
     def get_instance_posterior(self, x):
         """
         Returns the posterior porbability of the instance under the class according to the dataset distribution.
+        P(A|x)
         * Ignoring p(x)
         """
-        return 1
+        return self.get_instance_likelihood(x) * self.get_prior()
     
 class MultiNormalClassDistribution():
     def __init__(self, dataset, class_value):
