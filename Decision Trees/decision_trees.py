@@ -147,3 +147,30 @@ class DecisionNode:
 
     def is_leaf(self):
         return len(np.unique(self.data[:, -1])) <= 1
+
+def build_tree(data, impurity):
+    """
+    Build a tree using the given impurity measure and training dataset.
+    You are required to fully grow the tree until all leaves are pure.
+
+    Input:
+    - data: the training dataset.
+    - impurity: the chosen impurity measure. Notice that you can send a function
+                as an argument in python.
+
+    Output: the root node of the tree.
+    """
+    feat, thresh = best_feature_threshold(data, impurity)
+    root = DecisionNode(data, feat, thresh)
+
+    if root.is_leaf():
+        return root
+
+    left_data = data[data[:,feat] < thresh]
+    right_data = data[data[:,feat] > thresh]
+
+    root.children.append(build_tree(left_data, impurity))
+    root.children.append(build_tree(right_data, impurity))
+
+    return root
+
