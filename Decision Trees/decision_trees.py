@@ -99,7 +99,7 @@ def info_gain(data, feature, threshold, impurity):
 
 def best_feature_threshold(data, impurity):
     """
-    Calculates the best feature and subsequent threshold to split the data.
+    Calculates the best feature and its corresponding threshold to split the data.
 
     Input:
     - data: any dataset where the last column holds the labels.
@@ -108,13 +108,14 @@ def best_feature_threshold(data, impurity):
     max_gain = -np.inf
     best_feat = None
     best_thresh = None
-    for i in range(data.shape[1] - 1):
-        thresh = best_threshold(data, i, impurity)
-        gain = info_gain(data, i, thresh, impurity)
+
+    for feat in range(data.shape[1] - 1):
+        thresh = best_threshold(data, feat, impurity)
+        gain = info_gain(data, feat, thresh, impurity)
 
         if gain > max_gain:
             max_gain = gain
-            best_feat = i
+            best_feat = feat
             best_thresh = thresh
 
     return best_feat, best_thresh
