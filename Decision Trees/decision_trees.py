@@ -128,10 +128,11 @@ class DecisionNode:
     # functionality as described in the notebook. It is highly recommended that you
     # first read and understand the entire exercise before diving into this class.
 
-    def __init__(self, data, feature, threshold):
+    def __init__(self, data, feature, threshold, parent):
         self.data = data
         self.feature = feature  # column index of feature that best splits the data
         self.threshold = threshold  # the best threshold of the feature
+        self.parent = parent
 
         labels, labels_count = np.unique(data[:,-1], return_counts=True)
         num_x_label = -np.inf
@@ -145,7 +146,12 @@ class DecisionNode:
 
     def __str__(self):
         if self.is_leaf():
-            string = f"leaf: [{{{self.data[0,-1]}: {len(self.data)}}}]"
+            string = "leaf: ["
+            vals, counts = np.unique(self.data[:,-1], return_counts=True)
+            for i in range(len(vals)):
+                string += f"{{{vals[i]}: {counts[i]}}},"
+            string = string[:-1] + "]"
+
         else:
             string = f"[X{self.feature} <= {self.threshold:.3f}]"
 
@@ -183,7 +189,6 @@ def build_tree(data, impurity, chi_value):
 
     if chi_value != 1:
         chi_square = prune(data, left_data, right_data)
-
         if chi_square <= chi_table[chi_value]:
             return root
 
@@ -273,6 +278,11 @@ def prune(data, left_data, right_data):
     return chi_square
 
 def num_internal(node: DecisionNode):
+    """
+    Calaculates the number of internal nodes in a tree. i.e. the number of non-leaf nodes.
+    :param node: The root of the tree
+    :return:  the number of internal nodes.
+    """
     if node.is_leaf():
         return 0
     else:
@@ -296,7 +306,35 @@ def list_leaves(root: DecisionNode, leaves):
     return leaves
 
 def post_prune(root: DecisionNode, train_set, test_set):
-    pass
+    """
+    For each leaf in the tree, calculate the test accuracy of the tree
+    assuming no split occurred on the parent of that leaf and find the best
+    such parent (in the sense that not splitting on that parent results in
+    the best testing accuracy among possible parents). Make that parent into
+    a leaf and repeat this process until you are left with just the root.
+
+    Input:
+    - root: the root of the Decision tree
+    - train_set: the training set
+    - test_set: the testing set
+
+    Output:
+    (1) - The list of training accuracies
+    (2) - the list of testing accuracies
+    (3) - the list of number of nodes
+    """
+    training_accuracy = []
+    testing_accuracy = []
+    num_nodes = []
+
+    num_nodes.append(num_internal(root))
+    training_accuracy.append(calc_accuracy(root, train_set))
+    testing_accuracy.append((calc_accuracy(root, test_set)))
+
+    while len(root.children) != 0:
+        pass
+
+
 
 def help_print_tree(node, depth):
     print('   '*depth, end='')
