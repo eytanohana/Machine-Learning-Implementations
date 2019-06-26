@@ -220,7 +220,7 @@ def calc_accuracy(root: DecisionNode, dataset):
 
     accuracy /= len(dataset)
 
-    return accuracy
+    return accuracy * 100
 
 
 
@@ -249,26 +249,3 @@ def print_tree(node):
 	"""
     help_print_tree(node, 0)
 
-from sklearn import datasets
-from sklearn.model_selection import train_test_split
-
-if __name__ == '__main__':
-    # load dataset
-    X, y = datasets.load_breast_cancer(return_X_y=True)
-    X = np.column_stack([X, y])  # the last column holds the labels
-
-    # split dataset
-    X_train, X_test = train_test_split(X, random_state=99)
-
-    print("Training dataset shape: ", X_train.shape)
-    print("Testing dataset shape: ", X_test.shape)
-
-    tree_gini = build_tree(data=X_train, impurity=calc_gini)
-    tree_entropy = build_tree(data=X_train, impurity=calc_entropy)
-
-    instance = X_train[0]
-    label = instance[-1]
-
-    prediction = predict(tree_gini, instance)
-
-    print(prediction == label)
