@@ -308,7 +308,32 @@ def list_leaves(root: DecisionNode):
         return leaves
     ###################################################
 
-    list_leaves(root, [])
+    return list_leaves(root, [])
+
+
+def post_prune_accuracy(root: DecisionNode, dataset, stop: DecisionNode):
+    """
+    Calculates the accuracy of the tree on the dataset without going past the stop node.
+
+    Input:
+    - root: the root of the Decision Tree
+    - data_set: the set to compute the accuracy on
+    - stop: The node to stop at.
+
+    Output: The accuracy of the tree without the children of the stop node.
+    """
+    accuracy = 0
+
+    for instance in dataset:
+        prediction = post_prune_predict(root, instance, stop)
+
+        if prediction == instance[-1]:
+            accuracy += 1
+
+    accuracy /= len(dataset)
+
+    return accuracy * 100
+
 
 def post_prune(root: DecisionNode, train_set, test_set):
     """
