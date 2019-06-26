@@ -155,9 +155,12 @@ class DecisionNode:
         self.children.append(node)
 
     def is_leaf(self):
+        return len(self.children) == 0
+
+    def is_pure(self):
         return len(np.unique(self.data[:, -1])) <= 1
 
-def build_tree(data, impurity):
+def build_tree(data, impurity, chi_value):
     """
     Build a tree using the given impurity measure and training dataset.
     You are required to fully grow the tree until all leaves are pure.
@@ -172,14 +175,20 @@ def build_tree(data, impurity):
     feat, thresh = best_feature_threshold(data, impurity)
     root = DecisionNode(data, feat, thresh)
 
-    if root.is_leaf():
+    if root.is_pure():
         return root
 
     left_data = data[data[:,feat] < thresh]
     right_data = data[data[:,feat] > thresh]
 
-    root.children.append(build_tree(left_data, impurity))
-    root.children.append(build_tree(right_data, impurity))
+    if chi_value != 1:
+        chi_square = prune(data, left_data, right_data)
+
+        if chi_square <= chi_table[chi_value]:
+            return root
+
+    root.children.append(build_tree(left_data, impurity, chi_value))
+    root.children.append(build_tree(right_data, impurity, chi_value))
 
     return root
 
@@ -216,13 +225,64 @@ def calc_accuracy(root: DecisionNode, dataset):
     accuracy = 0.0
 
     for instance in dataset:
-        accuracy += 1 if predict(root, instance) == instance[-1] else 0
+        if predict(root, instance) == instance[-1]:
+            accuracy += 1
 
     accuracy /= len(dataset)
 
     return accuracy * 100
 
 
+def prune(data, left_data, right_data):
+    """
+    Determines if a nodes children have predictive power using
+    the chi square test.
+
+    Input:
+    - node: a DecisionNode.
+    - left: the dataset of the node's left child.
+    - right: the dataset of the node's right child.
+
+    Output: the chi square value.
+    """
+    chi_square = 0
+    # counts[0] is # of instances Y = 0, counts[1] is for Y=1
+    values, counts = np.unique(data[:, -1], return_counts=True)
+    total = len(data)  # total # of instances
+
+    probability_y0 = counts[0] / total  # P(Y = 0)
+    probability_y1 = counts[1] / total  # P(Y = 1)
+
+    # D = # of instances where feature <= thresh and feature > thresh
+    D = np.array([len(left_data), len(right_data)])
+
+    p = np.array([0, 0])
+    n = np.array([0, 0])
+    # p = # of instances where feature <= thresh and y = 0 in left and right nodes
+    p[0] = len(left_data[left_data[:, -1] == 0])
+    p[1] = len(right_data[right_data[:, -1] == 0])
+    # n = # of instances xj > thresh and y = 1 in left and right nodes
+    n[0] = len(left_data[left_data[:, -1] == 1])
+    n[1] = len(right_data[right_data[:, -1] == 1])
+
+    for f in values:
+        E0 = D[int(f)] * probability_y0
+        E1 = D[int(f)] * probability_y1
+        chi_square += (np.square((p[int(f)] - E0)) / E0) + (np.square(n[int(f)] - E1) / E1)
+
+    return chi_square
+
+def num_internal(node: DecisionNode):
+    if node.is_leaf():
+        return 0
+    else:
+        return num_internal(node.children[0]) + 1 + num_internal(node.children[1])
+
+def list_leaves(root: DecisionNode, leaves_list):
+    pass
+
+def post_prune(root: DecisionNode, train_set, test_set):
+    pass
 
 def help_print_tree(node, depth):
     print('   '*depth, end='')
