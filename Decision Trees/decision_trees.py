@@ -132,6 +132,15 @@ class DecisionNode:
         self.data = data
         self.feature = feature  # column index of feature that best splits the data
         self.threshold = threshold  # the best threshold of the feature
+
+        labels, labels_count = np.unique(data[:,-1], return_counts=True)
+        num_x_label = -np.inf
+        for i in range(len(labels_count)):
+            if (labels_count[i] > num_x_label):
+                num_x_label = labels_count[i]
+                self.majority = labels[i]
+
+
         self.children = []
 
     def __str__(self):
@@ -174,6 +183,24 @@ def build_tree(data, impurity):
 
     return root
 
+def predict(root: DecisionNode, instance):
+    """
+    Predict a given instance using the decision tree
+
+    Input:
+    - root: the root of the decision tree.
+    - instance: a row vector from the dataset. Note that the last element
+                of this vector is the label of the instance.
+
+    Output: the prediction of the instance.
+    """
+    node = root
+
+    while not node.is_leaf():
+        node = node.children[0] if instance[node.feature] < node.threshold else node.children[1]
+
+    return node.majority
+
 
 def help_print_tree(node, depth):
     print('   '*depth, end='')
@@ -199,3 +226,27 @@ def print_tree(node):
 	This function has no return value
 	"""
     help_print_tree(node, 0)
+
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+
+if __name__ == '__main__':
+    # load dataset
+    X, y = datasets.load_breast_cancer(return_X_y=True)
+    X = np.column_stack([X, y])  # the last column holds the labels
+
+    # split dataset
+    X_train, X_test = train_test_split(X, random_state=99)
+
+    print("Training dataset shape: ", X_train.shape)
+    print("Testing dataset shape: ", X_test.shape)
+
+    tree_gini = build_tree(data=X_train, impurity=calc_gini)
+    tree_entropy = build_tree(data=X_train, impurity=calc_entropy)
+
+    instance = X_train[0]
+    label = instance[-1]
+
+    prediction = predict(tree_gini, instance)
+
+    print(prediction == label)
