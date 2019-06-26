@@ -119,3 +119,31 @@ def best_feature_threshold(data, impurity):
             best_thresh = thresh
 
     return best_feat, best_thresh
+
+
+class DecisionNode:
+
+    # This class will hold everything you require to construct a decision tree.
+    # The structure of this class is up to you. However, you need to support basic
+    # functionality as described in the notebook. It is highly recommended that you
+    # first read and understand the entire exercise before diving into this class.
+
+    def __init__(self, data, feature, threshold):
+        self.data = data
+        self.feature = feature  # column index of feature that best splits the data
+        self.threshold = threshold  # the best threshold of the feature
+        self.children = []
+
+    def __str__(self):
+        if self.is_leaf():
+            string = f"leaf: [{{{self.data[0,-1]}: {len(self.data)}}}]"
+        else:
+            string = f"X{self.feature} < {self.threshold}"
+
+        return string
+
+    def add_child(self, node):
+        self.children.append(node)
+
+    def is_leaf(self):
+        return len(np.unique(self.data[:, -1])) <= 1
