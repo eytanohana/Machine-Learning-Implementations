@@ -46,14 +46,18 @@ class NaiveNormalClassDistribution():
 class MultiNormalClassDistribution():
     def __init__(self, dataset, class_value):
         """
-        A class which encapsulate the relevant parameters(mean, cov matrix) for a class conditinoal multi normal distribution.
+        A class which encapsulate the relevant parameters(mean, cov matrix) for a class conditional multi normal distribution.
         The mean and cov matrix (You can use np.cov for this!) will be computed from a given data set.
         
         Input
         - dataset: The dataset from which to compute the mean and mu (Numpy Array).
         - class_value : The class to calculate the mean and mu for.
         """
-        pass
+        self.dataset = dataset
+        self.class_dataset = dataset[dataset[:,-1] == class_value]
+        self.class_value = class_value
+        self.mean = np.mean(self.class_dataset[:, :-1], axis=0)
+
         
     def get_prior(self):
         """
