@@ -8,14 +8,17 @@ np.random.seed(42)
 class NaiveNormalClassDistribution():
     def __init__(self, dataset, class_value):
         """
-        A class which encapsulate the relevant parameters(mean, std) for a class conditinoal normal distribution.
+        A class which encapsulate the relevant parameters(mean, std) for a class conditional normal distribution.
         The mean and std are computed from a given data set.
         
         Input
         - dataset: The dataset from which to compute the mean and mu (Numpy Array).
         - class_value : The class to calculate the mean and mu for.
         """
-        pass
+        self.dataset = dataset[dataset[:,-1] == class_value]
+        self.class_value = class_value
+        self.mean = np.mean(self.dataset, axis=0)
+        self.std = np.std(self.dataset, axis=0)
     
     def get_prior(self):
         """
@@ -71,17 +74,21 @@ class MultiNormalClassDistribution():
 
 def normal_pdf(x, mean, std):
     """
-    Calculate normal desnity function for a given x, mean and standrad deviation.
+    Calculate normal density function for a given x, mean and standard deviation.
  
     Input:
     - x: A value we want to compute the distribution for.
     - mean: The mean value of the distribution.
     - std:  The standard deviation of the distribution.
  
-    Returns the normal distribution pdf according to the given mean and var for the given x.    
+    Returns the normal distribution pdf according to the given mean and standard deviation for the given x.
     """
-    pass
-    
+    fraction = 1 / np.sqrt(2 * np.pi * std**2)
+    exponent = -(x - mean)**2 / (2 * std**2)
+
+    return fraction * np.exp(exponent)
+
+
 def multi_normal_pdf(x, mean, cov):
     """
     Calculate multi variante normal desnity function for a given x, mean and covarince matrix.
