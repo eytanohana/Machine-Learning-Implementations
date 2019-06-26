@@ -202,6 +202,28 @@ def predict(root: DecisionNode, instance):
     return node.majority
 
 
+def calc_accuracy(root: DecisionNode, dataset):
+    """
+    calculate the accuracy starting from the root of the decision tree using
+    the given dataset.
+
+    Input:
+    - root: the root of the decision tree.
+    - dataset: the dataset on which the accuracy is evaluated
+
+    Output: the accuracy of the decision tree on the given dataset (%).
+    """
+    accuracy = 0.0
+
+    for instance in dataset:
+        accuracy += 1 if predict(root, instance) == instance[-1] else 0
+
+    accuracy /= len(dataset)
+
+    return accuracy
+
+
+
 def help_print_tree(node, depth):
     print('   '*depth, end='')
     print(node)
