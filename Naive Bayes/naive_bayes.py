@@ -33,7 +33,7 @@ class NaiveNormalClassDistribution():
         Returns the likelihood probability of the instance under the class according to the dataset distribution.
         P(x | A)
         """
-        return normal_pdf(x, self.mean, self.std)
+        return normal_pdf(x[0], self.mean[0], self.std[0]) * normal_pdf(x[1], self.mean[1], self.std[1])
     
     def get_instance_posterior(self, x):
         """
@@ -139,7 +139,7 @@ class DiscreteNBClassDistribution():
     
     def get_instance_posterior(self, x):
         """
-        Returns the posterior porbability of the instance under the class according to the dataset distribution.
+        Returns the posterior probability of the instance under the class according to the dataset distribution.
         * Ignoring p(x)
         """
         return 1
@@ -151,40 +151,55 @@ class DiscreteNBClassDistribution():
 class MAPClassifier():
     def __init__(self, ccd0 , ccd1):
         """
-        A Maximum a postreiori classifier. 
-        This class will hold 2 class distribution, one for class 0 and one for class 1, and will predicit and instance
-        by the class that outputs the highest posterior probability for the given instance.
+        A Maximum a posteriori classifier.
+        This class will hold 2 class distribution, one for class 0 and one for class 1, and will predict the
+         class of an instance by the class that outputs the highest posterior probability for the given instance.
     
         Input
-            - ccd0 : An object contating the relevant parameters and methods for the distribution of class 0.
-            - ccd1 : An object contating the relevant parameters and methods for the distribution of class 1.
+            - ccd0 : An object containing the relevant parameters and methods for the distribution of class 0.
+            - ccd1 : An object containing the relevant parameters and methods for the distribution of class 1.
         """
-        pass
+        self.clf0 = ccd0
+        self.clf1 = ccd1
     
     def predict(self, x):
         """
-        Predicts the instance class using the 2 distribution objects given in the object constructor.
+        Predicts the instance's class using the 2 distribution objects given in the object constructor.
         
         Input
             - An instance to predict.
             
         Output
-            - 0 if the posterior probability of class 0 is higher 1 otherwise.
+            - 0 if the posterior probability of class 0 is higher than 1 otherwise.
         """
-        pass
-    
+        posterior_0 = self.clf0.get_instance_posterior(x)
+        posterior_1 = self.clf1.get_instance_posterior(x)
+
+        if posterior_0 > posterior_1:
+            return self.clf0.class_value
+        else:
+            return self.clf1.class_value
+
+
 def compute_accuracy(testset, map_classifier):
     """
-    Compute the accuracy of a given a testset and using a map classifier object.
+    Computes the accuracy of a given testset using a map classifier object.
     
     Input
         - testset: The test for which to compute the accuracy (Numpy array).
-        - map_classifier : A MAPClassifier object capable of prediciting the class for each instance in the testset.
+        - map_classifier : A MAPClassifier object capable of predicting the class for each instance in the testset.
         
     Ouput
         - Accuracy = #Correctly Classified / #testset size
     """
-    return 0
+    accuracy = 0
+    for instance in testset:
+        if map_classifier.predict(instance) == instance[-1]:
+            accuracy += 1
+
+    accuracy /= len(testset)
+
+    return accuracy * 100
     
             
             
