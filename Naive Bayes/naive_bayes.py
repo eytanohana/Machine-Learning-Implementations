@@ -56,27 +56,30 @@ class MultiNormalClassDistribution():
         self.dataset = dataset
         self.class_dataset = dataset[dataset[:,-1] == class_value]
         self.class_value = class_value
-        self.mean = np.mean(self.class_dataset[:, :-1], axis=0)
-
+        self.mean = np.mean(self.class_dataset[:,:-1], axis=0)
+        self.cov = np.cov(self.class_dataset[:,:-1], rowvar=False)
         
     def get_prior(self):
         """
-        Returns the prior porbability of the class according to the dataset distribution.
+        Returns the prior probability of the class according to the dataset distribution.
+        P(A)
         """
-        return 1
+        return len(self.class_dataset) / len(self.dataset)
     
     def get_instance_likelihood(self, x):
         """
-        Returns the likelihhod porbability of the instance under the class according to the dataset distribution.
+        Returns the likelihhod probability of the instance under the class according to the dataset distribution.
+        P(x|A)
         """
-        return 1
+        return multi_normal_pdf(x, self.mean, self.cov)
     
     def get_instance_posterior(self, x):
         """
         Returns the posterior porbability of the instance under the class according to the dataset distribution.
+        P(A|x) = P(x|A) * P(A)
         * Ignoring p(x)
         """
-        return 1
+        return self.get_instance_likelihood(x) * self.get_prior()
     
     
 
@@ -99,16 +102,20 @@ def normal_pdf(x, mean, std):
 
 def multi_normal_pdf(x, mean, cov):
     """
-    Calculate multi variante normal desnity function for a given x, mean and covarince matrix.
+    Calculate multi variant normal density function for a given x, mean and covariance matrix.
  
     Input:
     - x: A value we want to compute the distribution for.
     - mean: The mean value of the distribution.
-    - std:  The standard deviation of the distribution.
+    - cov: The covariance matrix of the distribution
  
     Returns the normal distribution pdf according to the given mean and var for the given x.    
     """
-    pass
+    fraction = 1 / (2 * np.pi * np.sqrt(np.linalg.det(cov)))
+    # @ denotes matrix multiplication in numpy
+    exponent = -.5 * (x[:-1] - mean).transpose() @ np.linalg.inv(cov) @ (x[:-1] - mean)
+
+    return fraction  * np.exp(exponent)
 
 
 ####################################################################################################
