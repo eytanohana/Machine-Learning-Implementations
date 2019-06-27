@@ -127,24 +127,28 @@ EPSILLON = 1e-6 # == 0.000001 It could happen that a certain value will only occ
 class DiscreteNBClassDistribution():
     def __init__(self, dataset, class_value):
         """
-        A class which computes and encapsulate the relevant probabilites for a discrete naive bayes 
-        distribution for a specific class. The probabilites are computed with la place smoothing.
+        A class which computes and encapsulates the relevant probabilities for a discrete naive bayes
+        distribution for a specific class. The probabilities are computed with la place smoothing.
         
         Input
-        - dataset: The dataset from which to compute the probabilites (Numpy Array).
+        - dataset: The dataset from which to compute the probabilities (Numpy Array).
         - class_value : Compute the relevant parameters only for instances from the given class.
         """
-        pass
+        self.dataset = dataset
+        self.class_dataset = dataset[dataset[:,-1] == class_value]
+        self.class_value = class_value
     
     def get_prior(self):
         """
-        Returns the prior porbability of the class according to the dataset distribution.
+        Returns the prior probability of the class according to the dataset distribution.
+        P(A)
         """
-        return 1
+        return len(self.class_dataset) / len(self.dataset)
     
     def get_instance_likelihood(self, x):
         """
-        Returns the likelihhod porbability of the instance under the class according to the dataset distribution.
+        Returns the likelihood probability of the instance under the class according to the dataset distribution.
+        P(x|A)
         """
         return 1
     
