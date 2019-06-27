@@ -35,7 +35,7 @@ def compute_cost(X, y, theta):
     - J: the cost associated with the current set of parameters (single number).
     """
     m = len(X) # m is the number of instances
-    hypothesis = np.dot(X, theta)
+    hypothesis = X @ theta #  @ denotes matrix multiplication in numpy
     square_error = (hypothesis - y) ** 2
 
     J = np.sum(square_error) / (2 * m)
@@ -68,10 +68,10 @@ def gradient_descent(X, y, theta, alpha, num_iters):
     learning_rate = alpha / len(X)
 
     for i in range(num_iters):
-        hypothesis = np.dot(X, theta)
+        hypothesis = X @ theta
         error = hypothesis - y
 
-        theta = theta - learning_rate * np.dot(error, X)
+        theta = theta - learning_rate * (error @ X)
 
         J_history.append(compute_cost(X, y, theta))
 
@@ -92,9 +92,9 @@ def pseudo_inverse(X):
     :return: The pseudo-inverse matrix of X
     """
     # X_transpose * X gives a square matrix
-    square = np.matmul(X.transpose(), X)
+    square = X.transpose() @ X
     square_inverse = np.linalg.inv(square)
-    pinv_X = np.matmul(square_inverse, X.transpose())
+    pinv_X = square_inverse @ X.transpose()
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -115,7 +115,7 @@ def optimal_theta(X, y):
     ########## DO NOT USE numpy.pinv ##############
     """
     pinv_X = pseudo_inverse(X)
-    pinv_theta = np.dot(pinv_X, y)
+    pinv_theta = pinv_X @ y
 
     return pinv_theta
 
@@ -143,10 +143,10 @@ def efficient_gradient_descent(X, y, theta, alpha, num_iters):
     J_history.append(compute_cost(X, y, theta))
 
     for i in range(num_iters):
-        hypothesis = np.dot(X, theta)
+        hypothesis = X @ theta
         error = hypothesis - y
 
-        theta = theta - learning_rate * np.dot(error, X)
+        theta = theta - learning_rate * (error @ X)
         J_history.append(compute_cost(X, y, theta))
 
         if J_history[-1] < 1e-8 and abs(J_history[-1] - J_history[-2]) < 1e-8:
