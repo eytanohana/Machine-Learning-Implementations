@@ -41,7 +41,7 @@ class NaiveNormalClassDistribution():
         P(A|x)
         * Ignoring p(x)
         """
-        return self.get_instance_likelihood(x) * self.get_prior()
+        return self.get_prior() * self.get_instance_likelihood(x)
     
 class MultiNormalClassDistribution():
     def __init__(self, dataset, class_value):
@@ -79,7 +79,7 @@ class MultiNormalClassDistribution():
         P(A|x) = P(x|A) * P(A)
         * Ignoring p(x)
         """
-        return self.get_instance_likelihood(x) * self.get_prior()
+        return self.get_prior() * self.get_instance_likelihood(x)
     
     
 
@@ -150,14 +150,22 @@ class DiscreteNBClassDistribution():
         Returns the likelihood probability of the instance under the class according to the dataset distribution.
         P(x|A)
         """
-        return 1
+
+        prob = 1
+        n_i = len(self.class_dataset)
+        for i in range(len(x) - 1):
+            n_ij = len(self.class_dataset[self.class_dataset[:,i] == x[i]])
+            V_j = len(np.unique(self.class_dataset[:,i]))
+            prob *= (n_ij + 1) / (n_i + V_j)
+
+        return prob
     
     def get_instance_posterior(self, x):
         """
         Returns the posterior probability of the instance under the class according to the dataset distribution.
         * Ignoring p(x)
         """
-        return 1
+        return self.get_prior() * self.get_instance_likelihood(x)
 
     
 ####################################################################################################
