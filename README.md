@@ -6,3 +6,4 @@ at IDC Herzliyah.
 Thus far implemented: 
   - Linear Regression
   - Decision Trees
+  - Bayesian Learning
