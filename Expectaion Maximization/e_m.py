@@ -58,16 +58,16 @@ def init(points_list, k):
     :param k: number of gaussians. type: integer.
     :return the initial guess of w, mu, sigma. types: array
     """
-    w = np.array([0.0])
-    mu = np.array([0.0])
-    sigma = np.array([0.0])
-    ###########################################################################
-    # TODO: Implement the function. compute init values for w, mu, sigma.     #
-    ###########################################################################
-    pass
-    ###########################################################################
-    #                             END OF YOUR CODE                            #
-    ###########################################################################
+    # partition the points_list into k subsets
+    partitions = np.array_split(points_list, k)
+    size = len(points_list)
+
+    w = np.array([(len(part) / size) for part in partitions])
+    mu = np.array([np.mean(part) for part in partitions])
+    sigma = np.array([np.std(part) for part in partitions])
+
+    return w, mu, sigma
+
 
     return w, mu, sigma
 
