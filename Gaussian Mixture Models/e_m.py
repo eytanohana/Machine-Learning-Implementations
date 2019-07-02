@@ -49,7 +49,21 @@ def plot_pred_vs_actual(df):
     print ("mu_2: %s ,predicted mu_2: %s\nsigma_2: %s, predicted sigma_2: %s" % (mu2, mu_hat2, sigma2, sigma_hat2))
 
 
+def normal_pdf(x, mean, std):
+    """
+    Calculate normal density function for a given x, mean, and standard deviation.
 
+    Input:
+    - x: A value we want to compute the distribution for.
+    - mean: The mean value of the distribution.
+    - std:  The standard deviation of the distribution.
+
+    Returns the normal distribution pdf according to the given mean and standard deviation for the given x.
+    """
+    fraction = 1 / np.sqrt(2 * np.pi * std ** 2)
+    exponent = -(x - mean) ** 2 / (2 * std ** 2)
+
+    return fraction * np.exp(exponent)
 
 
 def init(points_list, k):
@@ -80,14 +94,13 @@ def expectation(points_list, mu, sigma, w):
     :param w: weight of each gaussian. type: array
     :return likelihood: dividend of ranks matrix (likelihood). likelihood[i][j] is the likelihood of point i to belong to gaussian j. type: array
     """
-    likelihood = np.array([0.0])
-    ###########################################################################
-    # TODO: Implement the function. compute likelihood array                  #
-    ###########################################################################
-    pass
-    ###########################################################################
-    #                             END OF YOUR CODE                            #
-    ###########################################################################
+    size = len(points_list)
+    num_gaussians = len(mu)
+
+    likelihood = np.empty((size, num_gaussians))
+
+    for i in range(size):
+        likelihood[i] = normal_pdf(points_list[i], mu, sigma) * w
 
     return likelihood
 
