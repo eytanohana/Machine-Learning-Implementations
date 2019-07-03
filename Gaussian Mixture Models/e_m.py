@@ -107,26 +107,30 @@ def expectation(points_list, mu, sigma, w):
 
 def maximization(points_list, ranks):
     """
-    # :param data: the complete data
     :param points_list: the entire data set of points. type: list.
-
     :param ranks: ranks matrix- r(x,k)- responsibility of each data point x to gaussian k
     :return w_new: new weight parameter of each gaussian
             mu_new: new expectation parameter of each gaussian
             sigma_new: new std parameter of each gaussian
     """
+    points_list = np.array(points_list)
+    size = len(points_list)
+    num_gaussians = ranks.shape[1]
 
-    w_new = np.array([0.0])
-    mu_new = np.array([0.0])
-    sigma_new = np.array([0.0])
+    mu_new = []
+    sigma_new = []
 
-    ###########################################################################
-    # TODO: Implement the function. compute w_new, mu_new, sigma_new          #
-    ###########################################################################
-    pass
-    ###########################################################################
-    #                             END OF YOUR CODE                            #
-    ###########################################################################
+    w_new = np.sum(ranks, axis=0) / size
+    mu_new = (ranks.transpose() @ points_list) / (w_new * size)
+
+
+    # Need to fix
+    sigma_new = (ranks.transpose() @ (points_list[:,np.newaxis] - mu_new)**2) / (w_new * size)
+
+    # for j in range(num_gaussians):
+        # w_new.append(np.sum(ranks[:,j]) / size)
+        # mu_new.append((ranks[:,j] @ points_list) / (w_new[j] * size))
+        # sigma_new.append(np.sqrt((ranks[:,j] @ (points_list - mu_new[j])**2) / (w_new[j] * size)))
 
     return w_new, mu_new, sigma_new
 
