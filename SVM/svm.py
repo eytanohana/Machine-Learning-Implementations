@@ -15,7 +15,7 @@ def prepare_data(data, labels, max_count=None, train_ratio=0.8):
     """
     :param data: a numpy array with the features dataset
     :param labels:  a numpy array with the labels
-    :param max_count: max amout of samples to work on. can be used for testing
+    :param max_count: max amount of samples to work on. can be used for testing
     :param train_ratio: ratio of samples used for train
     :return: train_data: a numpy array with the features dataset - for train
              train_labels: a numpy array with the labels - for train
@@ -31,13 +31,6 @@ def prepare_data(data, labels, max_count=None, train_ratio=0.8):
     test_data = array([])
     test_labels = array([])
 
-    ###########################################################################
-    # TODO: Implement the function                                            #
-    ###########################################################################
-    pass
-    ###########################################################################
-    #                             END OF YOUR CODE                            #
-    ###########################################################################
 
     return train_data, train_labels, test_data, test_labels
 
