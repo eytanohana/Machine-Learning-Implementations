@@ -83,9 +83,6 @@ def init(points_list, k):
     return w, mu, sigma
 
 
-    return w, mu, sigma
-
-
 def expectation(points_list, mu, sigma, w):
     """
     :param points_list: the entire data set of points. type: list.
@@ -177,11 +174,7 @@ def expectation_maximization(points_list, k, max_iter, epsilon):
 
 
     """
-    w = np.array([0.0])
-    mu = np.array([0.0])
-    sigma = np.array([0.0])
-    # TODO: init values and then remove the 3 lines above
-
+    w, mu, sigma = init(points_list, k)
     # Loop until convergence
     delta = np.infty
     iter_num = 0
@@ -190,20 +183,27 @@ def expectation_maximization(points_list, k, max_iter, epsilon):
     while delta > epsilon and iter_num <= max_iter:
 
         # E step
-        likelihood = None  # TODO: compute likelihood array
+        likelihood = expectation(points_list, mu, sigma, w)
 
         likelihood_sum = likelihood.sum(axis=1)
         log_likelihood.append(np.sum(np.log(likelihood_sum), axis=0))
 
         # M step
-        ranks = None  # TODO: compute ranks array using the likelihood array
+        ranks = np.empty(likelihood.shape)
 
-        w_new, mu_new, sigma_new = None, None, None   # TODO: compute w_new, mu_new, sigma_new
+        for i in range(likelihood.shape[0]):
+            row_sum = np.sum(likelihood[i])
+            for j in range(likelihood.shape[1]):
+                ranks[i,j] = likelihood[i,j] / row_sum
+
+        w_new, mu_new, sigma_new = maximization(points_list, ranks)
 
         # Check significant change in parameters
         delta = max(calc_max_delta(w, w_new), calc_max_delta(mu, mu_new), calc_max_delta(sigma, sigma_new))
 
-        # TODO: below, set the new values for w, mu, sigma
+        w = w_new
+        mu = mu_new
+        sigma = sigma_new
 
         if iter_num % 10 == 0:
             res = ranks.argmax(axis=1)
