@@ -117,22 +117,17 @@ def maximization(points_list, ranks):
     size = len(points_list)
     num_gaussians = ranks.shape[1]
 
-    mu_new = []
-    sigma_new = []
-
     w_new = np.sum(ranks, axis=0) / size
     mu_new = (ranks.transpose() @ points_list) / (w_new * size)
 
-
-    # Need to fix
-    sigma_new = (ranks.transpose() @ (points_list[:,np.newaxis] - mu_new)**2) / (w_new * size)
-
-    # for j in range(num_gaussians):
+    sigma_new = []
+    for j in range(num_gaussians):
+        ##### Both of these also work and are more inuitive ######
         # w_new.append(np.sum(ranks[:,j]) / size)
         # mu_new.append((ranks[:,j] @ points_list) / (w_new[j] * size))
-        # sigma_new.append(np.sqrt((ranks[:,j] @ (points_list - mu_new[j])**2) / (w_new[j] * size)))
+        sigma_new.append(np.sqrt((ranks[:,j] @ (points_list - mu_new[j])**2) / (w_new[j] * size)))
 
-    return w_new, mu_new, sigma_new
+    return w_new, mu_new, np.array(sigma_new)
 
 
 def calc_max_delta(old_param, new_param):
@@ -142,14 +137,10 @@ def calc_max_delta(old_param, new_param):
     :return maximal delta between each old and new parameter
     """
     max_delta = 0.0
+    old_param = np.array(old_param)
+    new_param = np.array(new_param)
 
-    ###########################################################################
-    # TODO: find the maximal delta between each old and new parameter         #
-    ###########################################################################
-    pass
-    ###########################################################################
-    #                             END OF YOUR CODE                            #
-    ###########################################################################
+    max_delta = np.max(np.abs(old_param - new_param))
 
     return max_delta
 
