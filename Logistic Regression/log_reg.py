@@ -107,52 +107,15 @@ def compute_accuracy(X, y, theta):
     return round(correct * 100.0 / len(X), ndigits=2)
 
 
-
-################ Need to modify from linear regression ###########################
-
-def efficient_gradient_descent(X, y, theta, alpha, num_iters):
-    """
-    Learn the parameters of your model, but stop the learning process once
-    the improvement of the loss value and the loss value itself is smaller than 1e-8.
-    This function is very similar to the gradient descent function you already implemented.
-
-    Input:
-    - X: Inputs  (n features over m instances).
-    - y: True labels (1 value over m instances).
-    - theta: The parameters (weights) of the model being learned.
-    - alpha: The learning rate of your model.
-    - num_iters: The number of updates performed.
-
-    Returns two values:
-    - theta: The learned parameters of your model.
-    - J_history: the loss value for every iteration.
-    """
-
-    J_history = []  
-    learning_rate = alpha / len(X)
-    J_history.append(compute_cost(X, y, theta))
-
-    for i in range(num_iters):
-        hypothesis = X @ theta
-        error = hypothesis - y
-
-        theta = theta - learning_rate * (error @ X)
-        J_history.append(compute_cost(X, y, theta))
-
-        if J_history[-1] < 1e-8 and abs(J_history[-1] - J_history[-2]) < 1e-8:
-            break
-
-    return theta, J_history
-
-
 def find_best_alpha(X, y, iterations):
     """
     Iterate over provided values of alpha and maintain a python dictionary
     with alpha as the key and the final loss as the value.
 
     Input:
-    - X: a dataframe that contains all relevant features.
-
+    - X: a numpy array that contains all relevant features.
+    - y: The array with all the labels
+    - iterations: the max number of iterations to perform.
     Returns:
     - alpha_dict: A python dictionary that hold the loss value after training
     for every value of alpha.
@@ -163,11 +126,11 @@ def find_best_alpha(X, y, iterations):
 
     for alpha in alphas:
         loops = 0
-        theta = np.random.random(size=2)
+        theta = np.random.random(size=X.shape[1])
         last_loss = np.inf
 
         while loops < iterations:
-            theta, loss = efficient_gradient_descent(X, y, theta, alpha, 100)
+            theta, loss = gradient_descent(X, y, theta, alpha, 100)
 
             if loops > 0 and loss[-1] > last_loss:
                 break
@@ -176,6 +139,10 @@ def find_best_alpha(X, y, iterations):
         alpha_dict[alpha] = last_loss
 
     return alpha_dict
+
+
+################ Need to modify from linear regression ###########################
+
 
 
 def generate_triplets(X):
