@@ -17,6 +17,10 @@ def min_max_scale(X):
     return (X - X.min(axis=0)) / (X.max(axis=0) - X.min(axis=0))
 
 def standaradize(X):
+    """
+    Perform mean normalization on the features of a dataset.
+    Center the features around mean = 0 with a standard deviation = 1
+    """
     return (X - X.mean(axis=0)) / X.std(axis=0)
                                    
 
@@ -104,7 +108,7 @@ def compute_accuracy(X, y, theta):
 
 
 
-################################### UP TO HERE #########################################
+################ Need to modify from linear regression ###########################
 
 def efficient_gradient_descent(X, y, theta, alpha, num_iters):
     """
