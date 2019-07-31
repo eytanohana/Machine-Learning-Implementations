@@ -107,10 +107,10 @@ def compute_accuracy(X, y, theta):
     return round(correct * 100.0 / len(X), ndigits=2)
 
 
-def find_best_alpha(X, y, iterations):
+def compare_alpha_costs(X, y, iterations):
     """
-    Iterate over provided values of alpha and maintain a python dictionary
-    with alpha as the key and the final loss as the value.
+    Iterate over provided values of alpha and get a dictionary of
+    alpha values with their associated cost_histories
 
     Input:
     - X: a numpy array that contains all relevant features.
@@ -122,21 +122,14 @@ def find_best_alpha(X, y, iterations):
     """
 
     alphas = [0.00001, 0.00003, 0.0001, 0.0003, 0.001, 0.003, 0.01, 0.03, 0.1, 0.3, 1, 2, 3]
+
     alpha_dict = {}
 
+    theta = np.random.random(size=X.shape[1])
+
     for alpha in alphas:
-        loops = 0
-        theta = np.random.random(size=X.shape[1])
-        last_loss = np.inf
-
-        while loops < iterations:
-            theta, loss = gradient_descent(X, y, theta, alpha, 100)
-
-            if loops > 0 and loss[-1] > last_loss:
-                break
-            loops += 100
-            last_loss = loss[-1]
-        alpha_dict[alpha] = last_loss
+        _, history = gradient_descent(X, y, theta, alpha, iterations)
+        alpha_dict[alpha] = history
 
     return alpha_dict
 
@@ -192,7 +185,7 @@ def find_best_triplet(df, triplets, alpha, num_iter):
 
         X = np.column_stack((np.ones(X.shape[0]), X))
 
-        _, J_history = efficient_gradient_descent(X, y, theta, alpha, num_iter)
+        _, J_history = gradient_descent(X, y, theta, alpha, num_iter)
 
         if J_history[-1] < min_cost:
             best_triplet = t
