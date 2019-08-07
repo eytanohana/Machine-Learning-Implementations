@@ -26,11 +26,17 @@ def prepare_data(data, labels, max_count=None, train_ratio=0.8):
         data = data[:max_count]
         labels = labels[:max_count]
 
-    train_data = array([])
-    train_labels = array([])
-    test_data = array([])
-    test_labels = array([])
 
+    dataset = concatenate((data, labels.reshape((-1,1))), axis=1)
+    dataset = permutation(dataset)
+
+    slice_size = int(train_ratio * dataset.shape[0])
+
+    train_data = dataset[:slice_size, :-1]
+    train_labels = dataset[:slice_size, -1]
+
+    test_data = dataset[slice_size:, :-1]
+    test_labels = dataset[slice_size:, -1]
 
     return train_data, train_labels, test_data, test_labels
 
@@ -46,15 +52,20 @@ def get_stats(prediction, labels):
 
     tpr = 0.0
     fpr = 0.0
-    accuracy = 0.0
+    accuracy = (prediction == labels).sum()
+    pos = count_nonzero(prediction)
 
-    ###########################################################################
-    # TODO: Implement the function                                            #
-    ###########################################################################
-    pass
-    ###########################################################################
-    #                             END OF YOUR CODE                            #
-    ###########################################################################
+
+    for pred, lab in zip(prediction, labels):
+        if pred == 1:
+            if lab == 1:
+                tpr += 1
+            else:
+                fpr += 1
+    tpr /= pos
+    fpr /= pos
+    accuracy /= len(prediction)
+
 
     return tpr, fpr, accuracy
 
@@ -70,13 +81,17 @@ def get_k_fold_stats(folds_array, labels_array, clf):
     fpr = []
     accuracy = []
 
-    ###########################################################################
-    # TODO: Implement the function                                            #
-    ###########################################################################
-    pass
-    ###########################################################################
-    #                             END OF YOUR CODE                            #
-    ###########################################################################
+    for fold in range(len(folds_array)):
+        x = concatenate((folds_array[:fold] + folds_array[fold+1:]), axis=0)
+        y = concatenate((labels_array[:fold] + labels_array[fold+1:]))
+
+        clf.fit(x, y)
+        predictions = clf.predict(folds_array[fold])
+        temp_tpr, temp_fpr, temp_accu = get_stats(predictions, labels_array[fold])
+
+        tpr.append(temp_tpr)
+        fpr.append(temp_fpr)
+        accuracy.append(temp_accu)
 
     return mean(tpr), mean(fpr), mean(accuracy)
 
