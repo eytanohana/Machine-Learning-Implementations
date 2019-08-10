@@ -45,16 +45,15 @@ def get_stats(prediction, labels):
     """
     :param prediction: a numpy array with the prediction of the model
     :param labels: a numpy array with the target values (labels)
-    :return: tpr: true positive rate
-             fpr: false positive rate
+    :return: tpr: true positive rate = #tp / #p
+             fpr: false positive rate = #fp / #n
              accuracy: accuracy of the model given the predictions
     """
 
     tpr = 0.0
     fpr = 0.0
     accuracy = (prediction == labels).sum()
-    pos = count_nonzero(prediction)
-
+    pos = count_nonzero(labels)
 
     for pred, lab in zip(prediction, labels):
         if pred == 1:
@@ -62,12 +61,13 @@ def get_stats(prediction, labels):
                 tpr += 1
             else:
                 fpr += 1
+
     tpr /= pos
-    fpr /= pos
+    fpr /= (len(prediction) - pos)
     accuracy /= len(prediction)
 
-
     return tpr, fpr, accuracy
+
 
 
 def get_k_fold_stats(folds_array, labels_array, clf):
@@ -116,13 +116,7 @@ def compare_svms(data_array,
     svm_df['fpr'] = None
     svm_df['accuracy'] = None
 
-    ###########################################################################
-    # TODO: Implement the function                                            #
-    ###########################################################################
-    pass
-    ###########################################################################
-    #                             END OF YOUR CODE                            #
-    ###########################################################################
+
 
     return svm_df
 
