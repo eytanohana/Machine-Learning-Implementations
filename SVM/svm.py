@@ -50,21 +50,39 @@ def get_stats(prediction, labels):
              accuracy: accuracy of the model given the predictions
     """
 
-    tpr = 0.0
-    fpr = 0.0
-    accuracy = (prediction == labels).sum()
-    pos = count_nonzero(labels)
+    # tpr = 0.0
+    # fpr = 0.0
+    # accuracy = (prediction == labels).sum()
+    # pos = count_nonzero(labels)
+    #
+    # for pred, lab in zip(prediction, labels):
+    #     if pred == 1:
+    #         if lab == 1:
+    #             tpr += 1
+    #         else:
+    #             fpr += 1
+    #
+    # tpr /= pos
+    # fpr /= (len(prediction) - pos)
+    # accuracy /= len(prediction)
+####################################################################
 
-    for pred, lab in zip(prediction, labels):
-        if pred == 1:
-            if lab == 1:
-                tpr += 1
-            else:
-                fpr += 1
+    tn = tp = fn = fp = 0
+    for i in range(len(prediction)):
+        if prediction[i] == 0 and labels[i] == 0:
+            tn += 1
+        elif prediction[i] == 1 and labels[i] == 1:
+            tp += 1
+        elif prediction[i] == 0 and labels[i] == 1:
+            fn += 1
+        else:
+            fp += 1
 
-    tpr /= pos
-    fpr /= (len(prediction) - pos)
-    accuracy /= len(prediction)
+    accuracy = (tp + tn) / (tp + tn + fp + fn)
+    tpr = tp / (tp + fn)
+    fpr = fp / (tn + fp)
+
+
 
     return tpr, fpr, accuracy
 
@@ -99,8 +117,8 @@ def get_k_fold_stats(folds_array, labels_array, clf):
 def compare_svms(data_array,
                  labels_array,
                  folds_count,
-                 kernels_list=('poly', 'poly', 'poly', 'rbf', 'rbf', 'rbf',),
-                 kernel_params=({'degree': 2}, {'degree': 3}, {'degree': 4}, {'gamma': 0.005}, {'gamma': 0.05}, {'gamma': 0.5},)):
+                 kernels_list=('poly', 'poly', 'poly', 'rbf', 'rbf', 'rbf'),
+                 kernel_params=({'degree': 2}, {'degree': 3}, {'degree': 4}, {'gamma': 0.005}, {'gamma': 0.05}, {'gamma': 0.5})):
     """
     :param data_array: a numpy array with the features dataset
     :param labels_array: a numpy array with the labels
@@ -112,11 +130,28 @@ def compare_svms(data_array,
     svm_df = pd.DataFrame()
     svm_df['kernel'] = kernels_list
     svm_df['kernel_params'] = kernel_params
-    svm_df['tpr'] = None
-    svm_df['fpr'] = None
-    svm_df['accuracy'] = None
+
+    tpr_list = []
+    fpr_list = []
+    acc_list = []
+
+    # We split the array into k folds
+    k_folds_data = array_split(data_array, folds_count)
+    k_folds_labels = array_split(labels_array, folds_count)
+
+    for kernel, param in zip(kernels_list, kernel_params):
+        clf = SVC(gamma=SVM_DEFAULT_GAMMA, degree=SVM_DEFAULT_DEGREE)
+        clf.set_params(kernel=kernel, **param)
+        stats = get_k_fold_stats(k_folds_data, k_folds_labels, clf)
+
+        tpr_list.append(stats[0])
+        fpr_list.append(stats[1])
+        acc_list.append(stats[2])
 
 
+    svm_df['tpr'] = tpr_list
+    svm_df['fpr'] = fpr_list
+    svm_df['accuracy'] = acc_list
 
     return svm_df
 
