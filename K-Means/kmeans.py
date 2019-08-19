@@ -49,7 +49,7 @@ def kmeans(X, k, p, max_iter=100):
     centroids = get_random_centroids(X, k)
 
     for i in range(max_iter):
-        print('iteration:', i + 1)
+        print('.', end='')
         old_classes = classes.copy()
 
         distances = lp_distance(X, centroids, p)
@@ -66,7 +66,8 @@ def kmeans(X, k, p, max_iter=100):
 
 def display_image(centroids, classes, img_shape):
     """
-    Displays the image given the calculated centroids and classes of every pixel.
+    Displays the image given the calculated centroids, class of every pixel,
+    and the original image shape.
 
     Inputs:
     - centroids: The centroids of the image.
