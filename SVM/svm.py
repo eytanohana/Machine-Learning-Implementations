@@ -1,4 +1,4 @@
-from numpy import count_nonzero, logical_and, logical_or, concatenate, mean, array_split, poly1d, polyfit, array
+from numpy import count_nonzero, logical_and, logical_or, concatenate, mean, array_split, poly1d, polyfit, array, linspace
 from numpy.random import permutation
 import pandas as pd
 from sklearn.svm import SVC
@@ -156,19 +156,34 @@ def compare_svms(data_array,
     return svm_df
 
 
-def get_most_accurate_kernel():
+def get_most_accurate_kernel(accuracy):
     """
-    :return: integer representing the row number of the most accurate kernel
+    :param accuracy: anything array-like representing the accuracy column.
+    :return: the index of the most accurate kernel
     """
     best_kernel = 0
+    best_accu = 0
+
+    for i, accu in enumerate(accuracy):
+        if accu > best_accu:
+            best_accu = accu
+            best_kernel = i
+
     return best_kernel
 
 
-def get_kernel_with_highest_score():
+def get_kernel_with_highest_score(scores):
     """
+    :param scores: anything array-like representing the score column.
     :return: integer representing the row number of the kernel with the highest score
     """
     best_kernel = 0
+    best_score = 0
+
+    for i, score in enumerate(scores):
+        if score > best_score:
+            best_score = score
+            best_kernel = i
     return best_kernel
 
 
@@ -178,16 +193,35 @@ def plot_roc_curve_with_score(df, alpha_slope=1.5):
     :param alpha_slope: alpha parameter for plotting the linear score line
     :return:
     """
-    x = df.fpr.tolist()
-    y = df.tpr.tolist()
+    fpr_list = df.fpr.tolist()
+    tpr_list = df.tpr.tolist()
 
-    ###########################################################################
-    # TODO: Implement the function                                            #
-    ###########################################################################
-    pass
-    ###########################################################################
-    #                             END OF YOUR CODE                            #
-    ###########################################################################
+    # get the best tpr and fpr
+    best_index = get_kernel_with_highest_score(df['score'])
+    best_tpr = tpr_list[best_index]
+    best_fpr = fpr_list[best_index]
+
+    # get the equation for the line going through the best kernel.
+    b = best_tpr - (alpha_slope * best_fpr)
+    x = linspace(0, 1)
+    y = (alpha_slope * x) + b
+
+    # Sort the tpr list and fpr list according to the order of the fpr_list
+    tpr_list = [item for _,item in sorted(zip(fpr_list,tpr_list))]
+    fpr_list = sorted(fpr_list)
+
+    # plot the line
+    plt.plot(x, y, color='red')
+    # plot the points on the roc curve
+    plt.scatter(fpr_list, tpr_list, color='blue')
+    plt.xlabel('FPR')
+    plt.ylabel('TPR')
+
+    # uncomment for better scale of blue points
+    # plt.ylim(bottom=.95, top=1.01)
+
+    plt.show()
+
 
 
 def evaluate_c_param(data_array, labels_array, folds_count):
