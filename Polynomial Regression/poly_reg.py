@@ -1,5 +1,4 @@
 import numpy as np
-import itertools
 np.random.seed(42)
 
 
@@ -186,62 +185,3 @@ def find_best_alpha(X, y, iterations):
         alpha_dict[alpha] = last_loss
 
     return alpha_dict
-
-
-def generate_triplets(X):
-    """
-    generate all possible sets of three features out of all relevant features
-    available from the given dataset X. You might want to use the itertools
-    python library.
-
-    Input:
-    - X: a dataframe that contains all relevant features.
-
-    Returns:
-    - A python list containing all feature triplets.
-    """
-    triplets = itertools.combinations(X, 3)
-
-    return list(triplets)
-
-
-def find_best_triplet(df, triplets, alpha, num_iter):
-    """
-    Iterate over all possible triplets and find the triplet that best
-    minimizes the cost function. For better performance, you should use the
-    efficient implementation of gradient descent. You should first preprocess
-    the data and obtain an array containing the columns corresponding to the
-    triplet. Don't forget the bias trick.
-
-    Input:
-    - df: A dataframe that contains the data
-    - triplets: a list of three strings representing three features in X.
-    - alpha: The value of the best alpha previously found.
-    - num_iters: The number of updates performed.
-
-    Returns:
-    - The best triplet as a python list holding the best triplet as strings.
-    """
-    best_triplet = None
-    min_cost = np.inf
-    ###########################################################################
-    # TODO: Implement the function.                                           #
-    ###########################################################################
-    y = np.array(df['price'])
-    theta = np.ones(4)
-    for t in triplets:
-        X = np.array(df[list(t)])
-        X, y = preprocess(X, y)
-
-        X = np.column_stack((np.ones(X.shape[0]), X))
-
-        _, J_history = efficient_gradient_descent(X, y, theta, alpha, num_iter)
-
-        if J_history[-1] < min_cost:
-            best_triplet = t
-            min_cost = J_history[-1]
-    ###########################################################################
-    #                             END OF YOUR CODE                            #
-    ###########################################################################
-    return best_triplet
-
