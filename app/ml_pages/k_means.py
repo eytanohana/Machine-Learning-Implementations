@@ -22,3 +22,11 @@ def run():
     different color channels of the image. Most traditionally, rgb, representing the red/green/blue intensities of
     each channel for each pixel. The intensities ranging from 0 - 255.
     ''')
+
+    image = image.reshape(image.shape[0] * image.shape[1], image.shape[2])
+    st.write(f'''
+    For the K-means algorithm, we need to reshape the data into two dimensions. The number of rows corresponding to
+    the number of pixels in the image and the number of columns representing the different color 
+    channels: {image.shape} - {len(image):,} pixels
+    ''')
+
