@@ -14,7 +14,6 @@ def run():
         st.stop()
     st.image(image)
     image = io.imread(image)
-    with st.expander('Explanation'):
     st.write(f'''
     The shape of the image is: {image.shape}
     
@@ -31,13 +30,23 @@ def run():
     channels: {image.shape} - {len(image):,} pixels
     ''')
 
-    st.markdown('''
+    st.markdown(r'''
     ## The Algorithm
     1. We start by choosing k random points, called the `centroids`.
-    1. we then assign every point in the dataset to the nearest centroid.
+    1. We then assign every point in the dataset to the nearest centroid.
         * All points belonging to the same centroid belong to the same "group".
     1. We then calculate the mean point for each group and assign the means as the new centroids. 
     1. We then repeat steps 2 and 3 until we don't see a change in the means or 
     we reach a predetermined maximum number of iterations.
+    
+    ### The distance metric
+    To calculate the distance between two points, we use the Minkowski distance metric.
+    The Minkowski distance of order $p$ between two points: 
+    $\vec{x}=(x_1, ..., x_n)$ and $\vec{y}=(y_1, ..., y_n)$ is:
+    $$
+    D(\vec{x},\vec{y}) = (\sum_{i=1}^n \mid x_i - y_i \mid ^p)^{\frac{1}{p}}
+    $$
+    
+    The Minkowski distance is a generalization of the Euclidean ($p=2$) and Manhattan ($p=1$) distances.
     ''')
 
