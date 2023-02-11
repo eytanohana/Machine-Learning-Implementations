@@ -3,8 +3,8 @@ from skimage import io
 
 
 def run():
-    st.header('K-Means', anchor='k_means')
     st.markdown('''
+    # K-Means
     K-Means is an algorithm for grouping similar data into K predefined groups. In this app we'll use
     K-Means to compress an image using color quantization, the process of compressing an image by representing
     it using less colors.
@@ -14,6 +14,7 @@ def run():
         st.stop()
     st.image(image)
     image = io.imread(image)
+    with st.expander('Explanation'):
     st.write(f'''
     The shape of the image is: {image.shape}
     
@@ -28,5 +29,15 @@ def run():
     For the K-means algorithm, we need to reshape the data into two dimensions. The number of rows corresponding to
     the number of pixels in the image and the number of columns representing the different color 
     channels: {image.shape} - {len(image):,} pixels
+    ''')
+
+    st.markdown('''
+    ## The Algorithm
+    1. We start by choosing k random points, called the `centroids`.
+    1. we then assign every point in the dataset to the nearest centroid.
+        * All points belonging to the same centroid belong to the same "group".
+    1. We then calculate the mean point for each group and assign the means as the new centroids. 
+    1. We then repeat steps 2 and 3 until we don't see a change in the means or 
+    we reach a predetermined maximum number of iterations.
     ''')
 
