@@ -1,5 +1,6 @@
 import streamlit as st
 from skimage import io
+from ..ml_src.kmeans import kmeans, display_image
 
 
 def run():
@@ -14,6 +15,7 @@ def run():
         st.stop()
     st.image(image)
     image = io.imread(image)
+    original_shape = image.shape
     with st.expander('Explanation'):
         st.write(f'''
         The shape of the image is: {image.shape}
@@ -49,4 +51,10 @@ def run():
         $$
         The Minkowski distance is a generalization of the Euclidean ($p=2$) and Manhattan ($p=1$) distances.
         ''')
+    a, b = st.columns(2)
+    k = a.number_input('Number of centroids', 2, 20)
+    p = b.number_input('Distance metric', 2, 100)
+    centroids, classes = kmeans(image, k, p)
+    comressed_img = display_image(centroids, classes, original_shape)
+    st.image(comressed_img)
 
