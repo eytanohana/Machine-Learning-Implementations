@@ -1,4 +1,5 @@
 import streamlit as st
+from skimage import io
 
 
 def run():
@@ -9,5 +10,15 @@ def run():
     it using less colors.
     ''')
     image = st.file_uploader('Choose an image', accept_multiple_files=False)
-    if image:
-        st.image(image)
+    if not image:
+        st.stop()
+    st.image(image)
+    image = io.imread(image)
+    st.write(f'''
+    The shape of the image is: {image.shape}
+    
+    The first dimension, {image.shape[0]}, represents the height of the image, while the second, {image.shape[1]},
+    represents the width of the image, both being in pixels. The third dimension, {image.shape[2]}, represents the
+    different color channels of the image. Most traditionally, rgb, representing the red/green/blue intensities of
+    each channel for each pixel. The intensities ranging from 0 - 255.
+    ''')
