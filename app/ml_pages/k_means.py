@@ -1,6 +1,6 @@
 import streamlit as st
 from skimage import io
-from ..ml_src.kmeans import kmeans, display_image
+from .src.kmeans import kmeans, display_image
 
 
 def run():
@@ -54,7 +54,8 @@ def run():
     a, b = st.columns(2)
     k = a.number_input('Number of centroids', 2, 20)
     p = b.number_input('Distance metric', 2, 100)
-    centroids, classes = kmeans(image, k, p)
-    comressed_img = display_image(centroids, classes, original_shape)
-    st.image(comressed_img)
+    with st.spinner():
+        centroids, classes = kmeans(image, k, p)
+        compressed_img = display_image(centroids, classes, original_shape)
+        st.image(compressed_img)
 
