@@ -1,5 +1,7 @@
+import numpy as np
 import streamlit as st
 from skimage import io
+from PIL import Image
 from .src.kmeans import kmeans, display_image
 
 
@@ -13,8 +15,10 @@ def run():
     image = st.file_uploader('Choose an image', accept_multiple_files=False)
     if not image:
         st.stop()
+    image = Image.open(image)
+    image.thumbnail(size=(500, 500))
     st.image(image)
-    image = io.imread(image)
+    image = np.asarray(image)
     original_shape = image.shape
     with st.expander('Explanation'):
         st.write(f'''

@@ -1,5 +1,4 @@
 import numpy as np
-from skimage import io
 
 
 def get_random_centroids(X, k):
@@ -50,7 +49,6 @@ def kmeans(X, k, p, max_iter=100):
     centroids = get_random_centroids(X, k)
 
     for i in range(max_iter):
-        print('.', end='')
         old_classes = classes.copy()
 
         distances = lp_distance(X, centroids, p)
