@@ -1,0 +1,10 @@
+version: '3'
+services:
+  streamlit-ml:
+    container_name: streamlit-ml
+    build:
+      context: .
+      args:
+        VERSION: local
+    ports:
+      - '8502:8502'
