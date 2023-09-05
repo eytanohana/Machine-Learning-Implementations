@@ -7,12 +7,14 @@ on:
       - "app/**"
       - "Dockerfile"
       - "app-requirements.txt"
+      - ".github/workflows/**"
   push:
     branches: [ "master" ]
     paths:
       - "app/**"
       - "Dockerfile"
       - "app-requirements.txt"
+      - ".github/workflows/**"
 
 env:
   IMAGE_NAME: eohana98/streamlit-ml
@@ -39,7 +41,7 @@ jobs:
       env:
         TAG: ${{ steps.new_tag.outputs.TAG }}
       run: |
-        docker build ./app --file Dockerfile \
+        docker build ./app/. --file Dockerfile \
           --tag $IMAGE_NAME:latest \
           --tag $IMAGE_NAME:$TAG \
           --build-arg VERSION=$TAG
