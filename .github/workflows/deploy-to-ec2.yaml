@@ -39,7 +39,7 @@ jobs:
       env:
         TAG: ${{ steps.new_tag.outputs.TAG }}
       run: |
-        docker build . --file Dockerfile \
+        docker build ./app --file Dockerfile \
           --tag $IMAGE_NAME:latest \
           --tag $IMAGE_NAME:$TAG \
           --build-arg VERSION=$TAG
@@ -101,9 +101,9 @@ jobs:
 
       - name: Remove images
         run: |
-          echo "removing old image..."
+          echo "removing old images..."
           ssh ec2 'docker image prune -f'
 
       - name: Start new container
-        run: ssh ec2 "docker run -p 8501:8501 -d --name streamlit-ml $IMAGE_NAME"
+        run: ssh ec2 "docker run -p 8502:8502 -d --name streamlit-ml $IMAGE_NAME"
 
