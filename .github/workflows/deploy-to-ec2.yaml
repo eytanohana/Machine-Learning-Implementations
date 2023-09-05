@@ -41,7 +41,7 @@ jobs:
       env:
         TAG: ${{ steps.new_tag.outputs.TAG }}
       run: |
-        docker build ./app --file Dockerfile \
+        docker build ./app --file app/Dockerfile \
           --tag $IMAGE_NAME:latest \
           --tag $IMAGE_NAME:$TAG \
           --build-arg VERSION=$TAG
