@@ -94,11 +94,8 @@ jobs:
       - name: Stop and remove running container
         run: |
           ssh ec2 '
-            container_ids=$(docker ps -a -q)
-            if [[ "$container_ids" != "" ]]; then
-              echo "stopping and removing existing containers..."
-              docker stop $container_ids && docker container prune -f
-            fi
+            echo "stopping and removing existing container..."
+            docker stop streamlit-ml && docker container prune -f
           '
 
       - name: Remove images
