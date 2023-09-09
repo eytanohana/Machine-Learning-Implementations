@@ -1,6 +1,5 @@
 import numpy as np
 import streamlit as st
-from skimage import io
 from PIL import Image
 from .src.kmeans import kmeans, display_image
 
