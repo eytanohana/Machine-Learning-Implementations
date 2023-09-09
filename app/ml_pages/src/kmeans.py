@@ -55,7 +55,6 @@ def kmeans(X, k, p, max_iter=100):
         classes = np.argmin(distances, axis=0)
 
         if np.array_equal(old_classes, classes):
-            print('done')
             return centroids, classes
 
         for j in range(k):
