@@ -55,10 +55,10 @@ def run():
         The Minkowski distance is a generalization of the Euclidean ($p=2$) and Manhattan ($p=1$) distances.
         ''')
     a, b = st.columns(2)
-    k = a.number_input('Number of centroids', 2, 20)
+    k = a.number_input('Number of centroids', 2, 100)
     p = b.number_input('Distance metric', 2, 100)
-    with st.spinner():
-        centroids, classes = kmeans(image, k, p)
+    compressed_image = st.empty()
+    for centroids, classes in kmeans(image, k, p):
         compressed_img = display_image(centroids, classes, original_shape)
-        st.image(compressed_img)
+        compressed_image.image(compressed_img)
 

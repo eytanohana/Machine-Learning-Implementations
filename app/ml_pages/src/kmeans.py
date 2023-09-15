@@ -48,7 +48,7 @@ def kmeans(X, k, p, max_iter=100):
     classes = []
     centroids = get_random_centroids(X, k)
 
-    for i in range(max_iter):
+    for _ in range(max_iter):
         old_classes = classes.copy()
 
         distances = lp_distance(X, centroids, p)
@@ -60,7 +60,7 @@ def kmeans(X, k, p, max_iter=100):
         for j in range(k):
             centroids[j] = X[classes == j].mean(axis=0)
 
-    return centroids, classes
+        yield centroids, classes
 
 
 def display_image(centroids, classes, img_shape):
@@ -82,3 +82,4 @@ def display_image(centroids, classes, img_shape):
         for j in range(classes.shape[1]):
             compressed_image[i, j, :] = centroids[classes[i, j], :]
     return compressed_image
+
