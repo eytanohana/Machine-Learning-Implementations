@@ -58,10 +58,11 @@ def run():
     k = a.number_input('Number of centroids', 2, 100)
     p = b.number_input('Distance metric', 2, 100)
     max_iter = 50
-    progress = st.progress(0., text='Running K-means')
+    progress_text = f'Running K-means with K = {k}'
+    progress = st.progress(0., text=progress_text)
     image_space = st.empty()
     for i, (centroids, classes) in enumerate(kmeans(image, k, p, max_iter=max_iter), 1):
-        progress.progress(i / max_iter, text='Running K-means')
+        progress.progress(i / max_iter, text=progress_text)
         image_space.image(display_image(centroids, classes, original_shape))
     progress.progress(1., text=f'Finished K-means with K = {k}')
 
