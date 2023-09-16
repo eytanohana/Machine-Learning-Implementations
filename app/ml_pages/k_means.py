@@ -61,7 +61,7 @@ def run():
     progress = st.progress(0., text='Running K-means')
     image_space = st.empty()
     for i, (centroids, classes) in enumerate(kmeans(image, k, p, max_iter=max_iter), 1):
-        progress.progress(i / 50, text='Running K-means')
+        progress.progress(i / max_iter, text='Running K-means')
         image_space.image(display_image(centroids, classes, original_shape))
     progress.progress(1., text=f'Finished K-means with K = {k}')
 
