@@ -57,8 +57,11 @@ def run():
     a, b = st.columns(2)
     k = a.number_input('Number of centroids', 2, 100)
     p = b.number_input('Distance metric', 2, 100)
-    compressed_image = st.empty()
-    for centroids, classes in kmeans(image, k, p):
-        compressed_img = display_image(centroids, classes, original_shape)
-        compressed_image.image(compressed_img)
+    max_iter = 50
+    progress = st.progress(0., text='Running K-means')
+    image_space = st.empty()
+    for i, (centroids, classes) in enumerate(kmeans(image, k, p, max_iter=max_iter), 1):
+        progress.progress(i / 50, text='Running K-means')
+        image_space.image(display_image(centroids, classes, original_shape))
+    progress.progress(1., text=f'Finished K-means with K = {k}')
 
