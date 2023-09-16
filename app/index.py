@@ -13,5 +13,20 @@ pages = {
 with st.sidebar:
     page = st.selectbox("Algorithms", pages.keys())
 
+footer = f"""<style>
+.footer {{
+position: fixed;
+left: 0;
+bottom: 0;
+width: 100%;
+text-align: right;
+padding-right: 10px;
+}}
+</style>
+<div class="footer">
+<p>{os.getenv('DOCKER_TAG', '')}</p>
+</div>
+"""
+st.markdown(footer,unsafe_allow_html=True)
 pages[page].run()
 logger.info(f'Running page {page}')
