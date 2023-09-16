@@ -104,5 +104,5 @@ jobs:
           ssh ec2 'docker image prune -f'
 
       - name: Start new container
-        run: ssh ec2 "docker run -p 8502:8502 -d --name streamlit-ml $IMAGE_NAME"
+        run: ssh ec2 "docker run --restart unless-stopped -p 8502:8502 -d --name streamlit-ml $IMAGE_NAME"
 
