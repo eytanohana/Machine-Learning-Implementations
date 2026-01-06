@@ -1,6 +1,10 @@
+
+import time
+
 import numpy as np
 import streamlit as st
 from PIL import Image
+
 from .src.kmeans import kmeans, display_image
 
 
@@ -54,15 +58,16 @@ def run():
         $$
         The Minkowski distance is a generalization of the Euclidean ($p=2$) and Manhattan ($p=1$) distances.
         ''')
-    a, b = st.columns(2)
-    k = a.number_input('Number of centroids', 2, 100)
-    p = b.number_input('Distance metric', 2, 100)
-    max_iter = 50
+    a, b, c = st.columns(3)
+    k = a.number_input('Number of centroids', 2, 100, help='the number of colors to use (1-100)')
+    p = b.number_input('Distance metric', 1, 100, help='distance metric to use between each pixel color and the centroid color (1-100)')
+    max_iter = c.number_input('Max Iterations', 10, 100, help='max iterations the algorithm can run, it can complete earlier (10-100)')
+    start = time.perf_counter()
     progress_text = f'Running K-means with K = {k}'
     progress = st.progress(0., text=progress_text)
     image_space = st.empty()
     for i, (centroids, classes) in enumerate(kmeans(image, k, p, max_iter=max_iter), 1):
-        progress.progress(i / max_iter, text=progress_text)
+        progress.progress(i / max_iter, text=progress_text + f', time: {time.perf_counter() - start:.2f}s')
         image_space.image(display_image(centroids, classes, original_shape))
-    progress.progress(1., text=f'Finished K-means with K = {k}')
+    progress.progress(1., text=f'Finished K-means with K = {k} colors, total time: {time.perf_counter() - start:.2f}s')
 
