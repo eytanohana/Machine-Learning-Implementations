@@ -1,4 +1,5 @@
 
+import io
 import time
 
 import numpy as np
@@ -67,12 +68,42 @@ def run():
     k = a.number_input('Number of centroids', 2, 100, help='the number of colors to use (1-100)')
     p = b.number_input('Distance metric', 1, 100, help='distance metric to use between each pixel color and the centroid color (1-100)')
     max_iter = c.number_input('Max Iterations', 10, 100, help='max iterations the algorithm can run, it can complete earlier (10-100)')
-    start = time.perf_counter()
+
     progress_text = f'Running K-means with K = {k}'
     progress = st.progress(0., text=progress_text)
     image_space = st.empty()
+    download_placeholder = st.empty()
+    final_image = None
+
+    # Run the simulation
+    start = time.perf_counter()
     for i, (centroids, classes) in enumerate(kmeans(image, k, p, max_iter=max_iter), 1):
-        progress.progress(i / max_iter, text=progress_text + f', time: {time.perf_counter() - start:.2f}s')
-        image_space.image(display_image(centroids, classes, original_shape))
-    progress.progress(1., text=f'Finished K-means with K = {k} colors, total time: {time.perf_counter() - start:.2f}s')
+        progress.progress(i / max_iter, text=f'{i}: ' + progress_text + f', time: {time.perf_counter() - start:.2f}s')
+        final_image = display_image(centroids, classes, original_shape)
+        image_space.image(final_image)
+    
+    # Mark simulation as complete
+    progress.progress(1., text=f'Finished K-means with K = {k} colors in {i} iterations,'
+                               f' total time: {time.perf_counter() - start:.2f}s')
+    
+    # Add download button only after simulation completes
+    if final_image is not None:
+        # Convert numpy array to PIL Image
+        pil_image = Image.fromarray(final_image)
+        # Save to bytes buffer
+        img_buffer = io.BytesIO()
+        pil_image.save(img_buffer, format='PNG')
+        img_buffer.seek(0)
+        
+        # Place download button in placeholder only after simulation completes
+        with download_placeholder.container():
+            @st.fragment()
+            def download_image():
+                st.download_button(
+                    label='Download Compressed Image',
+                    data=img_buffer.getvalue(),
+                    file_name=f'kmeans_k{k}_compressed.png',
+                    mime='image/png'
+                )
+            download_image()
 
