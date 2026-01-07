@@ -118,11 +118,7 @@ def run():
 
         # Display original and compressed images side by side
         with image_space.container():
-            col1, col2 = st.columns(2)
-            with col1:
-                st.image(original_pil_image, caption='Original Image', use_container_width=True)
-            with col2:
-                st.image(final_image, caption=f'Compressed Image (K={k})', use_container_width=True)
+            st.image(final_image, caption=f'Compressed Image (K={k})', use_container_width=True)
 
     # Mark simulation as complete
     progress.progress(
@@ -144,6 +140,12 @@ def run():
         compression_ratio = (1 - compressed_size_bytes / original_size_bytes) * 100
 
         with metric_container.container():
+            st.markdown('---')
+            a, b = st.columns(2)
+            a.image(original_pil_image, caption='Original Image', use_container_width=True)
+            b.image(final_image, caption=f'Compressed Image (K={k})', use_container_width=True)
+
+
             # Display size comparison
             col1, col2, col3 = st.columns(3)
             with col1:
