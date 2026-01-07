@@ -106,6 +106,7 @@ def run():
     progress_text = f'Running K-means with K = {k}'
     progress = st.progress(0.0, text=progress_text)
     image_space = st.empty()
+    metric_container = st.empty()
     download_placeholder = st.empty()
     final_image = None
 
@@ -142,14 +143,15 @@ def run():
         # Calculate compression ratio
         compression_ratio = (1 - compressed_size_bytes / original_size_bytes) * 100
 
-        # Display size comparison
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric('Original Size', f'{original_size_bytes / 1024:.2f} KB')
-        with col2:
-            st.metric('Compressed Size', f'{compressed_size_bytes / 1024:.2f} KB')
-        with col3:
-            st.metric('Size Reduction', f'{compression_ratio:.1f}%')
+        with metric_container.container():
+            # Display size comparison
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric('Original Size', f'{original_size_bytes / 1024:.2f} KB')
+            with col2:
+                st.metric('Compressed Size', f'{compressed_size_bytes / 1024:.2f} KB')
+            with col3:
+                st.metric('Size Reduction', f'{compression_ratio:.1f}%')
 
         # Place download button in placeholder only after simulation completes
         with download_placeholder.container():
