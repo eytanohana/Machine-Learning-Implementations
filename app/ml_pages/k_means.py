@@ -21,8 +21,11 @@ def run():
         st.stop()
     
     image = Image.open(image)
-    image.thumbnail(size=(500, 500))
     st.image(image)
+    image.thumbnail(size=(500, 500))
+
+    # Save original PIL image for side-by-side display
+    original_pil_image = image.copy()
     
     # Calculate original image size (as PNG)
     original_img_buffer = io.BytesIO()
@@ -31,7 +34,7 @@ def run():
 
     image = np.asarray(image)
     original_shape = image.shape
-    st.text(f'image compressed to {original_shape}, size = {original_size_bytes / 1024:.2f} KB')
+    st.text(f'image compressed to {original_size_bytes / 1024:.2f} KB - {original_shape[0]} x {original_shape[1]} pixels')
 
     with (st.expander('Explanation')):
         num_channels = image.shape[2]
@@ -94,7 +97,14 @@ def run():
     for i, (centroids, classes) in enumerate(kmeans(image, k, p, max_iter=max_iter), 1):
         progress.progress(i / max_iter, text=f'{i}: ' + progress_text + f', time: {time.perf_counter() - start:.2f}s')
         final_image = display_image(centroids, classes, original_shape)
-        image_space.image(final_image)
+        
+        # Display original and compressed images side by side
+        with image_space.container():
+            col1, col2 = st.columns(2)
+            with col1:
+                st.image(original_pil_image, caption='Original Image', use_container_width=True)
+            with col2:
+                st.image(final_image, caption=f'Compressed Image (K={k})', use_container_width=True)
     
     # Mark simulation as complete
     progress.progress(1., text=f'Finished K-means with K = {k} colors in {i} iterations,'
@@ -133,4 +143,3 @@ def run():
                     mime='image/png'
                 )
             download_image()
-
