@@ -79,9 +79,9 @@ def run():
         $\sum_{i=1}^n |x_i - y_i|$
         ''')
     a, b, c = st.columns(3)
-    k = a.number_input('Number of centroids', 2, 100, help='the number of colors to use (1-100)')
-    p = b.number_input('Distance metric', 1, 100, help='distance metric to use between each pixel color and the centroid color (1-100)')
-    max_iter = c.number_input('Max Iterations', 10, 100, help='max iterations the algorithm can run, it can complete earlier (10-100)')
+    k = a.slider('Number of centroids', 2, 100, value=2, help='the number of colors to use (1-100)')
+    p = b.slider('Distance metric', 1, 100, value=1, help='distance metric to use between each pixel color and the centroid color (1-100)')
+    max_iter = c.slider('Max Iterations', 10, 100, value=10, help='max iterations the algorithm can run, it can complete earlier (10-100)')
 
     progress_text = f'Running K-means with K = {k}'
     progress = st.progress(0., text=progress_text)
