@@ -77,9 +77,8 @@ def display_image(centroids, classes, img_shape):
     Displays the newly defined image.
     """
     classes = classes.reshape(img_shape[:-1])
-    compressed_image = np.zeros((classes.shape[0], classes.shape[1], img_shape[-1]), dtype=np.uint8 )
+    compressed_image = np.zeros((classes.shape[0], classes.shape[1], img_shape[-1]), dtype=np.uint8)
     for i in range(classes.shape[0]):
         for j in range(classes.shape[1]):
             compressed_image[i, j, :] = centroids[classes[i, j], :]
     return compressed_image
-
