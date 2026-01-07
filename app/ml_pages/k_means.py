@@ -28,9 +28,11 @@ def run():
     original_img_buffer = io.BytesIO()
     image.save(original_img_buffer, format='PNG')
     original_size_bytes = len(original_img_buffer.getvalue())
-    
+
     image = np.asarray(image)
     original_shape = image.shape
+    st.text(f'image compressed to {original_shape}, size = {original_size_bytes / 1024:.2f} KB')
+
     with st.expander('Explanation'):
         st.write(f'''
         The shape of the image is: {image.shape}
