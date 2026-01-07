@@ -19,9 +19,16 @@ def run():
     image = st.file_uploader('Choose an image', accept_multiple_files=False)
     if not image:
         st.stop()
+    
     image = Image.open(image)
     image.thumbnail(size=(500, 500))
     st.image(image)
+    
+    # Calculate original image size (as PNG)
+    original_img_buffer = io.BytesIO()
+    image.save(original_img_buffer, format='PNG')
+    original_size_bytes = len(original_img_buffer.getvalue())
+    
     image = np.asarray(image)
     original_shape = image.shape
     with st.expander('Explanation'):
@@ -94,6 +101,19 @@ def run():
         img_buffer = io.BytesIO()
         pil_image.save(img_buffer, format='PNG')
         img_buffer.seek(0)
+        compressed_size_bytes = len(img_buffer.getvalue())
+        
+        # Calculate compression ratio
+        compression_ratio = (1 - compressed_size_bytes / original_size_bytes) * 100
+        
+        # Display size comparison
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Original Size", f"{original_size_bytes / 1024:.2f} KB")
+        with col2:
+            st.metric("Compressed Size", f"{compressed_size_bytes / 1024:.2f} KB")
+        with col3:
+            st.metric("Size Reduction", f"{compression_ratio:.1f}%")
         
         # Place download button in placeholder only after simulation completes
         with download_placeholder.container():
