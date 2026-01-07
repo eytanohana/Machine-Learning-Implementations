@@ -33,14 +33,19 @@ def run():
     original_shape = image.shape
     st.text(f'image compressed to {original_shape}, size = {original_size_bytes / 1024:.2f} KB')
 
-    with st.expander('Explanation'):
+    with (st.expander('Explanation')):
+        num_channels = image.shape[2]
+        channel_description = "RGB (red/green/blue)" if num_channels == 3 \
+            else "RGBA (red/green/blue/alpha)" if num_channels == 4 \
+            else f"{num_channels} channels"
+
         st.write(f'''
         The shape of the image is: {image.shape}
-        
+
         The first dimension, {image.shape[0]}, represents the height of the image, while the second, {image.shape[1]},
         represents the width of the image, both being in pixels. The third dimension, {image.shape[2]}, represents the
-        different color channels of the image. Most traditionally, rgb, representing the red/green/blue intensities of
-        each channel for each pixel. The intensities ranging from 0 - 255.
+        different color channels of the image. This image has {num_channels} channel{'s' if num_channels != 1 else ''},
+        representing {channel_description} intensities for each pixel. The intensities range from 0 - 255.
         ''')
 
         image = image.reshape(image.shape[0] * image.shape[1], image.shape[2])
