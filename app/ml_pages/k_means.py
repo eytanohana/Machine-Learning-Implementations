@@ -106,7 +106,8 @@ def run():
     progress_text = f'Running K-means with K = {k}'
     progress = st.progress(0.0, text=progress_text)
     image_space = st.empty()
-    metric_container = st.empty()
+    rerun_container = st.container()
+    compare_images_container = st.empty()
     download_placeholder = st.empty()
     final_image = None
 
@@ -125,6 +126,7 @@ def run():
         1.0,
         text=f'Finished K-means with K = {k} colors in {i} iterations, total time: {time.perf_counter() - start:.2f}s',
     )
+    rerun_container.button('rerun')
 
     # Add download button only after simulation completes
     if final_image is not None:
@@ -139,7 +141,7 @@ def run():
         # Calculate compression ratio
         compression_ratio = (1 - compressed_size_bytes / original_size_bytes) * 100
 
-        with metric_container.container():
+        with compare_images_container.container():
             st.markdown('---')
             a, b = st.columns(2)
             a.image(original_pil_image, caption='Original Image', use_container_width=True)
