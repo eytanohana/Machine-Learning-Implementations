@@ -1,0 +1,108 @@
+name: Deploy app
+
+on:
+  pull_request:
+    branches: [ "master" ]
+    paths:
+      - "app/**"
+      - "Dockerfile"
+      - "app-requirements.txt"
+      - ".github/workflows/**"
+  push:
+    branches: [ "master" ]
+    paths:
+      - "app/**"
+      - "Dockerfile"
+      - "app-requirements.txt"
+      - ".github/workflows/**"
+
+env:
+  IMAGE_NAME: eohana98/streamlit-ml
+
+jobs:
+
+  build-image:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Create tag
+      id: new_tag
+      run: |
+        tag=$(date +%Y.%m.%d_%H.%M.%S)
+        echo "TAG=$tag" >> "$GITHUB_OUTPUT"
+        echo "Created tag: $tag"
+
+    - name: Build Image
+      env:
+        TAG: ${{ steps.new_tag.outputs.TAG }}
+      run: |
+        docker build ./app --file app/Dockerfile \
+          --tag $IMAGE_NAME:latest \
+          --tag $IMAGE_NAME:$TAG \
+          --build-arg VERSION=$TAG
+
+    - name: Docker login
+      if: github.ref_name == 'master'
+      uses: docker/login-action@v2
+      with:
+        username: eohana98
+        password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN}}
+
+    - name: Docker push
+      if: github.ref_name == 'master'
+      env:
+        TAG: ${{ steps.new_tag.outputs.TAG }}
+      run: |
+        docker push $IMAGE_NAME:$TAG
+        docker push $IMAGE_NAME:latest
+
+
+  deploy:
+    needs: build-image
+    runs-on: ubuntu-latest
+    if: github.ref_name == 'master'
+    env:
+      EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+      EC2_HOST: ${{ secrets.EC2_HOST }}
+
+    steps:
+      - name: Configure SSH
+        env:
+          SSH_HOST: ${{ secrets.EC2_HOST }}
+          SSH_USER: ${{ secrets.EC2_USER }}
+          SSH_KEY: ${{ secrets.EC2_SSH_KEY }} 
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/github-actions-key
+          chmod 600 ~/.ssh/github-actions-key
+          cat >>~/.ssh/config <<END
+          Host ec2
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/github-actions-key
+            StrictHostKeyChecking no
+          END
+
+      - name: Pull latest image
+        run: ssh ec2 "docker pull $IMAGE_NAME:latest"
+
+      - name: Stop and remove running container
+        run: |
+          ssh ec2 '
+            echo "stopping and removing existing container..."
+            docker stop streamlit-ml && docker container prune -f
+          '
+
+      - name: Remove images
+        run: |
+          echo "removing old images..."
+          ssh ec2 'docker image prune -f'
+
+      - name: Start new container
+        run: ssh ec2 "docker run --restart unless-stopped -p 8502:8502 -d --name streamlit-ml $IMAGE_NAME"
+
