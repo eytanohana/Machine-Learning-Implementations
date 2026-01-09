@@ -176,7 +176,7 @@ def expectation_maximization(points_list, k, max_iter, epsilon):
     """
     w, mu, sigma = init(points_list, k)
     # Loop until convergence
-    delta = np.infty
+    delta = np.inf
     iter_num = 0
 
     log_likelihood = []

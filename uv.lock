@@ -1083,6 +1083,7 @@ app = [
     { name = "streamlit" },
 ]
 notebooks = [
+    { name = "ipython" },
     { name = "jupyter" },
     { name = "matplotlib" },
     { name = "scikit-image" },
@@ -1099,6 +1100,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 app = [{ name = "streamlit", specifier = ">=1.52.2" }]
 notebooks = [
+    { name = "ipython", specifier = ">=9.9.0" },
     { name = "jupyter", specifier = ">=1.1.1" },
     { name = "matplotlib", specifier = ">=3.10.8" },
     { name = "scikit-image", specifier = ">=0.26.0" },
