@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import numpy as np
 from skimage import io
 
@@ -82,5 +83,6 @@ def display_image(centroids, classes, img_shape):
     for i in range(classes.shape[0]):
         for j in range(classes.shape[1]):
                 compressed_image[i,j,:] = centroids[classes[i,j],:]
-    io.imshow(compressed_image)
-    io.show()
+    plt.imshow(compressed_image)
+    plt.axis('off')
+    plt.show()
