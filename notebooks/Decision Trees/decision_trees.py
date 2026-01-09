@@ -406,7 +406,7 @@ def post_prune(root: DecisionNode, train_set, test_set):
 
     while len(root.children) != 0:
         leaves = list_leaves(root)
-        max_test_acc = np.NINF
+        max_test_acc = -np.inf
         best_parent = None
 
         for leaf in leaves:
